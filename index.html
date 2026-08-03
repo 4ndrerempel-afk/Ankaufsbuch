@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ankaufsbuch">
+<meta name="theme-color" content="#F4F4F1">
+<title>Ankaufsbuch</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>
+:root{
+  --paper:#F4F4F1; --card:#FFFFFF; --ink:#1B2430; --ink-2:#5A6472; --ink-3:#8B94A0;
+  --rule:#DCD9D0; --rule-2:#EDEBE5;
+  --stamp:#C42B1C; --stamp-soft:#FBEAE7;
+  --signal:#E0A215; --signal-soft:#FDF3DC;
+  --ok:#2F6B4F; --ok-soft:#E6F0EA;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.45; -webkit-text-size-adjust:100%;
+  padding-bottom:calc(76px + var(--safe-b));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{
+  width:100%; background:var(--card); border:1px solid var(--rule); border-radius:6px;
+  padding:11px 12px; appearance:none; -webkit-appearance:none;
+}
+input:focus,select,textarea:focus,button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235A6472' stroke-width='1.8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:12px;padding-right:34px}
+textarea{min-height:70px;resize:vertical}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- Kopf ---------- */
+header{
+  position:sticky;top:0;z-index:40;background:var(--paper);
+  border-bottom:1px solid var(--rule); padding:10px 16px 9px;
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  display:flex;align-items:center;gap:12px;
+}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;flex:1;line-height:1.2}
+.brand small{display:block;font-size:10px;letter-spacing:.1em;color:var(--ink-3);font-weight:600}
+#yearSel{width:auto;padding:6px 30px 6px 10px;font-family:var(--mono);font-weight:600;font-size:14px;border-radius:5px}
+
+/* ---------- Layout ---------- */
+main{padding:16px 16px 8px;max-width:720px;margin:0 auto}
+.view{display:none}.view.on{display:block}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:26px 0 10px;font-weight:700}
+h2:first-child{margin-top:4px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.card + .card{margin-top:10px}
+.pad{padding:14px}
+.row{display:flex;gap:10px}
+.row > *{flex:1;min-width:0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);font-weight:700;margin-bottom:5px}
+.hint{font-size:12.5px;color:var(--ink-3);line-height:1.4;margin-top:5px}
+
+/* ---------- Kennzahlen ---------- */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.kpi{background:var(--card);padding:13px 14px}
+.kpi .lab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+.kpi .val{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .sub{font-size:11.5px;color:var(--ink-3)}
+.kpi.wide{grid-column:1/-1}
+.kpi.accent .val{color:var(--stamp)}
+
+/* ---------- Belegzeile ---------- */
+.beleg{display:flex;gap:0;border-bottom:1px solid var(--rule-2);background:var(--card);width:100%;text-align:left;border-left:0;border-right:0;border-top:0;padding:0;cursor:pointer}
+.beleg:last-child{border-bottom:0}
+.stamp{
+  flex:0 0 74px;background:var(--stamp-soft);border-right:1px solid var(--rule-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;
+}
+.stamp b{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--stamp);letter-spacing:-.03em}
+.stamp span{font-family:var(--mono);font-size:9px;color:var(--stamp);opacity:.75;letter-spacing:.06em}
+.beleg .body{flex:1;min-width:0;padding:11px 13px}
+.beleg .t{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.beleg .m{font-size:12.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.beleg .amt{flex:0 0 auto;padding:11px 13px 11px 4px;text-align:right;font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+.beleg.storno{opacity:.5}
+.beleg.storno .t{text-decoration:line-through}
+
+/* ---------- Belegqualität ---------- */
+.qual{display:flex;gap:2px;margin-top:6px;width:64px}
+.qual i{height:3px;flex:1;background:var(--rule);border-radius:2px}
+.qual.q1 i:nth-child(1){background:var(--stamp)}
+.qual.q2 i:nth-child(-n+2){background:var(--signal)}
+.qual.q3 i{background:var(--ok)}
+
+.tag{display:inline-block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;padding:3px 7px;border-radius:4px;background:var(--rule-2);color:var(--ink-2)}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--signal-soft);color:#8A6100}
+.tag.bad{background:var(--stamp-soft);color:var(--stamp)}
+
+/* ---------- Buttons ---------- */
+button{border:none;background:none;padding:0;cursor:pointer}
+.btn{display:block;width:100%;background:var(--ink);color:#fff;border-radius:8px;padding:13px;font-weight:650;font-size:15px;text-align:center}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--rule)}
+.btn.danger{background:var(--card);color:var(--stamp);border:1px solid var(--stamp)}
+.btn + .btn{margin-top:9px}
+.btn:active{opacity:.75}
+.btn[disabled]{opacity:.4}
+.linkrow{display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px;border-bottom:1px solid var(--rule-2);background:var(--card);text-align:left}
+.linkrow:last-child{border-bottom:0}
+.linkrow .l{font-weight:600;font-size:15px}
+.linkrow .d{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.linkrow .chev{color:var(--ink-3);font-family:var(--mono)}
+
+/* ---------- Tableiste ---------- */
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(244,244,241,.94);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);
+  border-top:1px solid var(--rule);display:flex;padding-bottom:var(--safe-b);
+}
+nav button{flex:1;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3);font-size:10px;letter-spacing:.05em;font-weight:650;text-transform:uppercase}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--ink)}
+.fab{position:fixed;right:16px;bottom:calc(74px + var(--safe-b));z-index:45;width:56px;height:56px;border-radius:28px;background:var(--stamp);color:#fff;font-size:30px;line-height:52px;text-align:center;box-shadow:0 4px 16px rgba(27,36,48,.24)}
+
+/* ---------- Sheet ---------- */
+.sheet{position:fixed;inset:0;z-index:100;background:var(--paper);display:none;flex-direction:column}
+.sheet.on{display:flex}
+.sheet .top{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+.sheet .top .ttl{flex:1;font-size:13px;letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+.sheet .top button{font-size:15px;font-weight:600;color:var(--ink-2)}
+.sheet .top button.prim{color:var(--stamp);font-weight:700}
+.sheet .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(40px + var(--safe-b))}
+
+/* ---------- Bilder ---------- */
+.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.shot{position:relative;border:1px solid var(--rule);border-radius:8px;background:var(--card);overflow:hidden;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot .kindlab{position:absolute;left:0;right:0;bottom:0;background:rgba(27,36,48,.82);color:#fff;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;padding:3px 6px;text-align:center}
+.shot .del{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:12px;background:rgba(27,36,48,.82);color:#fff;font-size:15px;line-height:24px;text-align:center}
+.shot.add{border-style:dashed;flex-direction:column;gap:4px;color:var(--ink-3);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;text-align:center;padding:8px}
+.shot.add span:first-child{font-size:24px;line-height:1}
+
+/* ---------- Positionen ---------- */
+.pos{border:1px solid var(--rule);border-radius:8px;padding:11px;margin-bottom:9px;background:var(--card)}
+.pos .hd{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.pos .hd .ix{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-weight:700;flex:0 0 auto}
+.pos .hd .rm{color:var(--stamp);font-size:12px;font-weight:700;flex:0 0 auto}
+.pos .hd input{flex:1}
+
+.banner{border-radius:9px;padding:12px 13px;font-size:13.5px;line-height:1.45;margin-bottom:12px;border:1px solid}
+.banner.warn{background:var(--signal-soft);border-color:#EBD9A6;color:#6E4E00}
+.banner.bad{background:var(--stamp-soft);border-color:#F0C8C2;color:#8B2015}
+.banner.info{background:var(--card);border-color:var(--rule);color:var(--ink-2)}
+.banner b{font-weight:700}
+.empty{text-align:center;padding:34px 18px;color:var(--ink-3);font-size:14px;line-height:1.5}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + var(--safe-b));z-index:200;background:var(--ink);color:#fff;padding:11px 17px;border-radius:22px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.dl{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--rule-2);font-size:14px}
+.dl:last-child{border-bottom:0}
+.dl dt{color:var(--ink-2)}
+.dl dd{margin:0;font-family:var(--mono);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---------- Druck ---------- */
+#print{display:none}
+@media print{
+  body{background:#fff;padding:0}
+  header,nav,main,.fab,.sheet,.toast{display:none !important}
+  #print{display:block;font-family:var(--sans);color:#000;font-size:11pt}
+  .page{page-break-after:always;padding:0 0 8mm}
+  .page:last-child{page-break-after:auto}
+  .ptbl{width:100%;border-collapse:collapse;font-size:9pt}
+  .ptbl th,.ptbl td{border:.5pt solid #999;padding:3pt 4pt;text-align:left;vertical-align:top}
+  .ptbl th{background:#eee;font-size:8pt;text-transform:uppercase;letter-spacing:.05em}
+  .ptbl td.n{text-align:right;font-family:var(--mono)}
+  .phd{border-bottom:1.5pt solid #000;padding-bottom:4mm;margin-bottom:5mm}
+  .phd h1{font-size:15pt;margin:0 0 1mm}
+  .phd .sub{font-size:9pt;color:#444}
+  .ebox{border:1pt solid #000;padding:5mm;margin-bottom:5mm}
+  .egrid{display:grid;grid-template-columns:38mm 1fr;gap:1.5mm 4mm;font-size:10pt}
+  .egrid .k{color:#444;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;padding-top:.6mm}
+  .esig{margin-top:12mm;display:grid;grid-template-columns:1fr 1fr;gap:10mm}
+  .esig div{border-top:.5pt solid #000;padding-top:1.5mm;font-size:8pt;color:#444}
+  .pimgs{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-top:4mm}
+  .pimgs figure{margin:0}
+  .pimgs img{width:100%;max-height:75mm;object-fit:contain;border:.5pt solid #999}
+  .pimgs figcaption{font-size:7.5pt;color:#444;text-transform:uppercase;letter-spacing:.05em;padding-top:1mm}
+  .pnote{font-size:8pt;color:#444;margin-top:3mm;line-height:1.4}
+  .ptot{margin-top:4mm;font-size:10pt;font-weight:700;text-align:right;font-family:var(--mono)}
+  h3.psec{font-size:11pt;margin:6mm 0 2mm;border-bottom:.5pt solid #000;padding-bottom:1mm}
+  .ptext{font-size:9.5pt;line-height:1.5}
+  .ptext li{margin-bottom:1.5mm}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Ankaufsbuch<small id="brandSub">Privatankauf · Eigenbeleg</small></div>
+  <select id="yearSel" aria-label="Geschäftsjahr"></select>
+</header>
+
+<main>
+  <!-- ÜBERSICHT -->
+  <section class="view on" id="v-home">
+    <div id="homeBanners"></div>
+    <div class="kpis" id="homeKpis"></div>
+    <h2>Meldegrenzen der Plattformen</h2>
+    <div class="card pad" id="pstg"></div>
+    <h2>Zuletzt erfasst</h2>
+    <div class="card" id="homeRecent"></div>
+  </section>
+
+  <!-- ANKÄUFE -->
+  <section class="view" id="v-buy">
+    <div class="card" id="buyList"></div>
+  </section>
+
+  <!-- LAGER -->
+  <section class="view" id="v-stock">
+    <div class="field"><select id="stockFilter">
+      <option value="lager">Auf Lager</option>
+      <option value="verkauft">Verkauft</option>
+      <option value="alle">Alle Positionen</option>
+    </select></div>
+    <div class="card" id="stockList"></div>
+  </section>
+
+  <!-- KOSTEN -->
+  <section class="view" id="v-cost">
+    <button class="btn" id="addCost">Kosten erfassen</button>
+    <h2>Erfasste Kosten</h2>
+    <div class="card" id="costList"></div>
+  </section>
+
+  <!-- ABSCHLUSS -->
+  <section class="view" id="v-out">
+    <div id="outBanner"></div>
+    <h2>Drucken &amp; als PDF sichern</h2>
+    <div class="card" id="printRows"></div>
+    <h2>Daten</h2>
+    <div class="card" id="dataRows"></div>
+    <h2>Stammdaten</h2>
+    <div class="card" id="settingsRows"></div>
+    <p class="hint" style="margin:14px 2px 0">Zum PDF: Drucken auswählen, dann im iOS-Dialog auf „Teilen“ → „In Dateien sichern“.</p>
+  </section>
+</main>
+
+<button class="fab" id="fab" aria-label="Ankauf erfassen">+</button>
+
+<nav>
+  <button data-v="home" class="on"><svg viewBox="0 0 24 24"><path d="M4 19V9l8-5 8 5v10"/><path d="M9 19v-6h6v6"/></svg>Übersicht</button>
+  <button data-v="buy"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Ankäufe</button>
+  <button data-v="stock"><svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>Lager</button>
+  <button data-v="cost"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h5M9.5 14.5h5"/></svg>Kosten</button>
+  <button data-v="out"><svg viewBox="0 0 24 24"><path d="M6 9V4h12v5"/><rect x="4" y="9" width="16" height="7" rx="1"/><path d="M7 16h10v5H7z"/></svg>Abschluss</button>
+</nav>
+
+<!-- Sheets -->
+<div class="sheet" id="sheet">
+  <div class="top">
+    <button id="shCancel">Abbrechen</button>
+    <div class="ttl" id="shTitle"></div>
+    <button class="prim" id="shSave">Sichern</button>
+  </div>
+  <div class="scroll" id="shBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="filePick" accept="image/*" style="display:none">
+<input type="file" id="jsonPick" accept="application/json,.json" style="display:none">
+<div id="print"></div>
+
+<script>
+"use strict";
+/* =======================================================================
+   Ankaufsbuch — Privatankäufe belegen, Bestand führen, Jahr abschließen.
+   Alles bleibt auf diesem Gerät (IndexedDB). Kein Server, kein Konto.
+   ======================================================================= */
+
+const KAT = {
+  fahrt:"Fahrtkosten", verpackung:"Verpackungsmaterial", porto:"Porto (allgemein)",
+  gebuehr:"Plattformgebühren", technik:"Technik / Zubehör", buero:"Bürobedarf", sonst:"Sonstiges"
+};
+const ZAHLART = {ueberweisung:"Überweisung", paypal:"PayPal", bar:"Bar", sonst:"Sonstiges"};
+const PLATTFORM = ["Kleinanzeigen","eBay","Flohmarkt","Privat direkt","Haushaltsauflösung","Sonstige"];
+const VK_PLATTFORM = ["Whatnot","eBay","Kleinanzeigen","Vinted","Direkt","Sonstige"];
+const SHOT = {ware:"Foto der Ware", anzeige:"Anzeige", chat:"Chatverlauf", zahlung:"Zahlungsnachweis"};
+const KM_SATZ = 0.30;
+
+/* ---------------- Speicher ---------------- */
+let db = null, memMode = false;
+const mem = {purchases:[],items:[],expenses:[],images:[],meta:[]};
+
+function openDB(){
+  return new Promise(res=>{
+    let req;
+    try{ req = indexedDB.open("ankaufsbuch",1); }catch(e){ memMode=true; return res(); }
+    req.onupgradeneeded = ()=>{
+      const d = req.result;
+      ["purchases","items","expenses","images","meta"].forEach(n=>{
+        if(!d.objectStoreNames.contains(n)) d.createObjectStore(n,{keyPath:"id"});
+      });
+    };
+    req.onsuccess = ()=>{ db = req.result; res(); };
+    req.onerror = ()=>{ memMode = true; res(); };
+    req.onblocked = ()=>{ memMode = true; res(); };
+    setTimeout(()=>{ if(!db && !memMode){ memMode=true; res(); } }, 2500);
+  });
+}
+function tx(store,mode){ return db.transaction(store,mode).objectStore(store); }
+function all(store){
+  if(memMode || !db) return Promise.resolve(mem[store].slice());
+  return new Promise(res=>{ const r = tx(store,"readonly").getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); });
+}
+function put(store,obj){
+  if(memMode || !db){
+    const a = mem[store], i = a.findIndex(x=>x.id===obj.id);
+    if(i>=0) a[i]=obj; else a.push(obj);
+    return Promise.resolve(obj);
+  }
+  return new Promise(res=>{ const r = tx(store,"readwrite").put(obj); r.onsuccess=()=>res(obj); r.onerror=()=>res(obj); });
+}
+function del(store,id){
+  if(memMode || !db){ mem[store] = mem[store].filter(x=>x.id!==id); return Promise.resolve(); }
+  return new Promise(res=>{ const r = tx(store,"readwrite").delete(id); r.onsuccess=()=>res(); r.onerror=()=>res(); });
+}
+function getOne(store,id){
+  if(memMode || !db) return Promise.resolve(mem[store].find(x=>x.id===id)||null);
+  return new Promise(res=>{ const r = tx(store,"readonly").get(id); r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null); });
+}
+
+/* ---------------- Zustand ---------------- */
+const S = {year:new Date().getFullYear(), purchases:[], items:[], expenses:[], meta:{}, view:"home", draft:null};
+const uid = ()=> Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const eur = n => (Number(n)||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const dstr = s => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}.${m}.${y}`; };
+const today = ()=> new Date().toISOString().slice(0,10);
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = v => { const n = parseFloat(String(v).replace(",",".")); return isFinite(n)?n:0; };
+
+/* ---------------- Bilder ---------------- */
+const urlCache = new Map();
+function shotURL(id, blob){
+  if(urlCache.has(id)) return urlCache.get(id);
+  const u = URL.createObjectURL(blob); urlCache.set(id,u); return u;
+}
+function compress(file){
+  return new Promise(res=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const max = 1500, sc = Math.min(1, max/Math.max(img.width,img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        c.toBlob(b=>res(b||file), "image/jpeg", 0.72);
+      };
+      img.onerror = ()=>res(file);
+      img.src = fr.result;
+    };
+    fr.onerror = ()=>res(file);
+    fr.readAsDataURL(file);
+  });
+}
+const blobToB64 = b => new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(b); });
+function b64ToBlob(s){
+  const [head,data] = s.split(","), mime = (head.match(/:(.*?);/)||[,"image/jpeg"])[1];
+  const bin = atob(data), arr = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+
+/* ---------------- Rechnen ---------------- */
+const inYear = (r,y)=> r.year===y;
+const activePurchases = ()=> S.purchases.filter(p=>inYear(p,S.year) && !p.storno).sort((a,b)=> b.beleg-a.beleg);
+const yearItems = ()=> S.items.filter(i=>{
+  const p = S.purchases.find(x=>x.id===i.purchaseId);
+  return p && !p.storno;
+});
+function belegQual(p){
+  let q = 1;
+  if(p.vName && p.vName.trim() && p.vPlz && p.vPlz.trim()) q++;
+  const shots = (p.shots||[]).map(s=>s.kind);
+  if(p.zahlart!=="bar" && shots.includes("zahlung")) q++;
+  else if(p.zahlart==="bar" && q===2 && shots.includes("ware") && shots.includes("anzeige")) q++;
+  return Math.min(q,3);
+}
+const QUALTXT = {1:"Nur Betrag belegt", 2:"Verkäufer benannt", 3:"Vollständig belegt"};
+function saleNet(it){
+  const s = it.sale; if(!s) return 0;
+  return num(s.vk) - num(s.gebuehren) - num(s.porto) - num(s.verpackung);
+}
+function stats(){
+  const ps = activePurchases();
+  const its = yearItems();
+  const wareneinkauf = ps.reduce((a,p)=>a+num(p.betrag),0);
+  const sold = its.filter(i=>i.sale && i.sale.datum && i.sale.datum.slice(0,4)==String(S.year));
+  const erloese = sold.reduce((a,i)=>a+num(i.sale.vk),0);
+  const vkNeben = sold.reduce((a,i)=>a+num(i.sale.gebuehren)+num(i.sale.porto)+num(i.sale.verpackung),0);
+  const kosten = S.expenses.filter(e=>inYear(e,S.year)).reduce((a,e)=>a+num(e.betrag),0);
+  const lager = its.filter(i=>!i.sale);
+  const lagerwert = lager.reduce((a,i)=>a+num(i.ek),0);
+  const marge25a = sold.reduce((a,i)=>a+(num(i.sale.vk)-num(i.ek)),0);
+  return {ps,its,sold,wareneinkauf,erloese,vkNeben,kosten,lager,lagerwert,marge25a,
+          ergebnis: erloese - wareneinkauf - vkNeben - kosten};
+}
+function plattformZaehler(){
+  const m = {};
+  S.items.forEach(i=>{
+    if(!i.sale || !i.sale.datum || i.sale.datum.slice(0,4)!=String(S.year)) return;
+    const p = i.sale.plattform||"Sonstige";
+    m[p] = m[p] || {n:0,sum:0};
+    m[p].n++; m[p].sum += num(i.sale.vk);
+  });
+  return m;
+}
+
+/* ---------------- UI-Helfer ---------------- */
+let toastT;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"),2100);
+}
+function show(v){
+  S.view = v;
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on", s.id==="v-"+v));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  document.getElementById("fab").style.display = (v==="home"||v==="buy") ? "block" : "none";
+  window.scrollTo(0,0);
+  render();
+}
+function openSheet(title, html, onSave, saveLabel){
+  document.getElementById("shTitle").textContent = title;
+  document.getElementById("shBody").innerHTML = html;
+  const btn = document.getElementById("shSave");
+  btn.textContent = saveLabel || "Sichern";
+  btn.style.display = onSave ? "block" : "none";
+  document.getElementById("sheet").classList.add("on");
+  document.getElementById("sheet")._save = onSave;
+  document.getElementById("shBody").scrollTop = 0;
+}
+function closeSheet(){
+  document.getElementById("sheet").classList.remove("on");
+  document.getElementById("sheet")._save = null;
+  S.draft = null;
+}
+const val = id => (document.getElementById(id)?.value ?? "").trim();
+
+/* ---------------- Rendern ---------------- */
+function render(){
+  if(S.view==="home") renderHome();
+  if(S.view==="buy") renderBuys();
+  if(S.view==="stock") renderStock();
+  if(S.view==="cost") renderCosts();
+  if(S.view==="out") renderOut();
+}
+
+function renderHome(){
+  const st = stats();
+  const b = [];
+  if(memMode) b.push(`<div class="banner bad"><b>Vorschaumodus.</b> Dieser Browser lässt keinen dauerhaften Speicher zu — Eingaben gehen beim Schließen verloren. Lade die Datei auf dein iPhone und öffne sie über einen Webserver, dann speichert sie dauerhaft.</div>`);
+  const lastB = S.meta.lastBackup;
+  const dayDiff = lastB ? Math.floor((Date.now()-lastB)/864e5) : null;
+  if(st.ps.length && (dayDiff===null || dayDiff>7))
+    b.push(`<div class="banner warn"><b>Sicherung fällig.</b> ${dayDiff===null?"Du hast noch nie gesichert.":"Letzte Sicherung vor "+dayDiff+" Tagen."} Unter Abschluss → Sicherung erstellen legst du eine Datei in iCloud ab.</div>`);
+  const schwach = st.ps.filter(p=>belegQual(p)===1).length;
+  if(schwach) b.push(`<div class="banner warn"><b>${schwach} ${schwach===1?"Beleg":"Belege"} ohne Verkäuferangabe.</b> Ohne Name und Anschrift des Empfängers kann das Finanzamt den Betriebsausgabenabzug streichen (§ 160 AO). Trag nach, was du noch hast.</div>`);
+  document.getElementById("homeBanners").innerHTML = b.join("");
+
+  document.getElementById("homeKpis").innerHTML = `
+    <div class="kpi accent"><div class="lab">Wareneinkauf ${S.year}</div><div class="val">${eur(st.wareneinkauf)}</div><div class="sub">${st.ps.length} Ankäufe · ${st.its.length} Positionen</div></div>
+    <div class="kpi"><div class="lab">Verkaufserlöse</div><div class="val">${eur(st.erloese)}</div><div class="sub">${st.sold.length} Verkäufe</div></div>
+    <div class="kpi"><div class="lab">Lagerwert 31.12.</div><div class="val">${eur(st.lagerwert)}</div><div class="sub">${st.lager.length} unverkauft</div></div>
+    <div class="kpi"><div class="lab">Kosten</div><div class="val">${eur(st.kosten+st.vkNeben)}</div><div class="sub">Gebühren, Porto, Fahrten</div></div>
+    <div class="kpi wide"><div class="lab">Ergebnis vor Steuern</div><div class="val" style="color:${st.ergebnis<0?"var(--stamp)":"var(--ok)"}">${eur(st.ergebnis)}</div><div class="sub">Erlöse − Wareneinkauf − Kosten</div></div>`;
+
+  const zc = plattformZaehler();
+  const keys = Object.keys(zc);
+  document.getElementById("pstg").innerHTML = keys.length ? keys.map(k=>{
+    const c = zc[k], hit = c.n>=30 || c.sum>=2000;
+    return `<div class="dl"><dt>${esc(k)} ${hit?'<span class="tag warn" style="margin-left:5px">gemeldet</span>':''}</dt>
+      <dd>${c.n} × · ${eur(c.sum)}</dd></div>`;
+  }).join("") + `<p class="hint">Ab 30 Verkäufen oder 2.000 € Erlös je Plattform und Jahr meldet der Betreiber deine Daten ans Bundeszentralamt für Steuern. Deine Zahlen sollten dazu passen.</p>`
+  : `<p class="hint" style="margin:0">Noch keine Verkäufe erfasst. Sobald du verkaufst, siehst du hier, ob du die Meldegrenzen der Plattformen reißt.</p>`;
+
+  const rec = st.ps.slice(0,5);
+  document.getElementById("homeRecent").innerHTML = rec.length ? rec.map(belegRow).join("")
+    : `<div class="empty"><b>Noch nichts erfasst für ${S.year}.</b>Tipp auf das rote Plus und leg deinen ersten Ankauf an.</div>`;
+}
+
+function belegRow(p){
+  const its = S.items.filter(i=>i.purchaseId===p.id);
+  const verk = its.filter(i=>i.sale).length;
+  const q = belegQual(p);
+  const titel = p.typ==="konvolut" ? (p.bez || `Konvolut · ${its.length} Positionen`) : (its[0]?.bez || p.bez || "Ankauf");
+  return `<button class="beleg ${p.storno?"storno":""}" data-open="${p.id}">
+    <div class="stamp"><b>${String(p.beleg).padStart(4,"0")}</b><span>EB-${p.year}</span></div>
+    <div class="body">
+      <div class="t">${esc(titel)}</div>
+      <div class="m">${dstr(p.datum)} · ${esc(p.vName||p.vNick||"Verkäufer offen")}${verk?` · ${verk}/${its.length} verkauft`:""}</div>
+      <div class="qual q${q}"><i></i><i></i><i></i></div>
+    </div>
+    <div class="amt">${eur(p.betrag)}</div>
+  </button>`;
+}
+
+function renderBuys(){
+  const ps = S.purchases.filter(p=>inYear(p,S.year)).sort((a,b)=>b.beleg-a.beleg);
+  document.getElementById("buyList").innerHTML = ps.length ? ps.map(belegRow).join("")
+    : `<div class="empty"><b>Keine Ankäufe in ${S.year}.</b>Jeder Ankauf bekommt automatisch eine fortlaufende Belegnummer.</div>`;
+}
+
+function renderStock(){
+  const f = document.getElementById("stockFilter").value;
+  let its = yearItems().filter(i=>{
+    const p = S.purchases.find(x=>x.id===i.purchaseId);
+    if(f==="lager") return !i.sale;
+    if(f==="verkauft") return !!i.sale;
+    return true;
+  });
+  if(f!=="lager") its = its.filter(i=> !i.sale || i.sale.datum.slice(0,4)==String(S.year) || (S.purchases.find(x=>x.id===i.purchaseId)||{}).year===S.year);
+  its.sort((a,b)=> (b.sale?.datum||"9")>(a.sale?.datum||"9") ? 1 : -1);
+  document.getElementById("stockList").innerHTML = its.length ? its.map(i=>{
+    const p = S.purchases.find(x=>x.id===i.purchaseId) || {};
+    const diff = i.sale ? num(i.sale.vk)-num(i.ek) : 0;
+    return `<button class="beleg" data-item="${i.id}">
+      <div class="stamp" style="background:${i.sale?"var(--ok-soft)":"var(--rule-2)"};flex-basis:64px">
+        <b style="color:${i.sale?"var(--ok)":"var(--ink-2)"};font-size:10px;letter-spacing:.08em">${i.sale?"VERKAUFT":"LAGER"}</b>
+        <span style="color:var(--ink-3)">${String(p.beleg||0).padStart(4,"0")}</span>
+      </div>
+      <div class="body">
+        <div class="t">${esc(i.bez||"Position")}</div>
+        <div class="m">EK ${eur(i.ek)}${i.sale?` · VK ${eur(i.sale.vk)} · ${esc(i.sale.plattform||"")}`:` · seit ${dstr(p.datum)}`}</div>
+      </div>
+      <div class="amt" style="color:${i.sale?(diff>=0?"var(--ok)":"var(--stamp)"):"var(--ink-3)"}">${i.sale?(diff>=0?"+":"")+eur(diff):"—"}</div>
+    </button>`;
+  }).join("") : `<div class="empty"><b>Nichts gefunden.</b>Positionen entstehen beim Erfassen eines Ankaufs.</div>`;
+}
+
+function renderCosts(){
+  const es = S.expenses.filter(e=>inYear(e,S.year)).sort((a,b)=> a.datum<b.datum?1:-1);
+  document.getElementById("costList").innerHTML = es.length ? es.map(e=>`
+    <button class="linkrow" data-cost="${e.id}">
+      <div><div class="l">${esc(KAT[e.kat]||e.kat)}</div><div class="d">${dstr(e.datum)}${e.km?` · ${e.km} km`:""}${e.notiz?" · "+esc(e.notiz):""}</div></div>
+      <div class="mono" style="font-weight:600">${eur(e.betrag)}</div>
+    </button>`).join("")
+    : `<div class="empty"><b>Keine Kosten erfasst.</b>Fahrten zum Abholen, Kartons, Polstermaterial — das drückt deinen Gewinn und gehört rein.</div>`;
+}
+
+function renderOut(){
+  const st = stats();
+  document.getElementById("outBanner").innerHTML = st.ps.length ? "" :
+    `<div class="banner info">Für ${S.year} liegt noch nichts vor. Die Auswertungen füllen sich, sobald du Ankäufe erfasst.</div>`;
+  document.getElementById("printRows").innerHTML = `
+    ${outRow("journal","Ankaufsjournal","Alle Ankäufe des Jahres als Tabelle. Die Summe ist dein Wareneinkauf.")}
+    ${outRow("belege","Eigenbelege einzeln","Eine Seite je Ankauf, mit Bildern und Unterschriftszeile.")}
+    ${outRow("marge","§ 25a-Aufstellung","Einkauf, Verkauf und Differenz je Position — Vorsorge für den Fall, dass du aus § 19 rauswächst.")}
+    ${outRow("lager","Lagerliste 31.12.","Unverkaufte Ware mit Einkaufswert. Fragt dein Steuerberater.")}
+    ${outRow("kosten","Kostenaufstellung","Fahrten, Porto, Verpackung, Gebühren.")}
+    ${outRow("verfahren","Verfahrensdokumentation","Beschreibt, wie dieses Buch geführt wird. Einmal drucken, abheften.")}
+    ${outRow("alles","Komplettpaket drucken","Alles oben in einem Rutsch.")}`;
+  const lb = S.meta.lastBackup;
+  document.getElementById("dataRows").innerHTML = `
+    <button class="linkrow" data-act="backup"><div><div class="l">Sicherung erstellen</div><div class="d">${lb?"Zuletzt "+new Date(lb).toLocaleDateString("de-DE"):"Noch nie gesichert"} · Datei mit allen Bildern</div></div><div class="chev">→</div></button>
+    <button class="linkrow" data-act="restore"><div><div class="l">Sicherung einlesen</div><div class="d">Ergänzt fehlende Datensätze, überschreibt nichts</div></div><div class="chev">→</div></button>
+    <button class="linkrow" data-act="csv"><div><div class="l">CSV für den Steuerberater</div><div class="d">Ankäufe, Positionen und Kosten als Tabelle</div></div><div class="chev">→</div></button>`;
+  const m = S.meta;
+  document.getElementById("settingsRows").innerHTML = `
+    <button class="linkrow" data-act="stamm"><div><div class="l">${esc(m.name||"Name und Anschrift eintragen")}</div><div class="d">${m.name?esc([m.strasse,m.plzOrt].filter(Boolean).join(", ")||"Anschrift fehlt")+(m.stnr?" · "+esc(m.stnr):""):"Erscheint auf jedem Eigenbeleg"}</div></div><div class="chev">→</div></button>`;
+}
+const outRow = (k,l,d)=>`<button class="linkrow" data-print="${k}"><div><div class="l">${l}</div><div class="d">${d}</div></div><div class="chev">↧</div></button>`;
+
+/* ---------------- Ankauf erfassen / bearbeiten ---------------- */
+function nextBeleg(y){
+  const n = S.purchases.filter(p=>p.year===y).reduce((a,p)=>Math.max(a,p.beleg),0);
+  return n+1;
+}
+function purchaseForm(p){
+  const isNew = !p.id;
+  const its = isNew ? (S.draft.items) : S.items.filter(i=>i.purchaseId===p.id);
+  const beleg = isNew ? nextBeleg(S.year) : p.beleg;
+  return `
+  <div class="banner info" style="display:flex;align-items:center;gap:11px">
+    <div style="font-family:var(--mono);font-weight:700;color:var(--stamp);font-size:17px">EB-${p.year||S.year}-${String(beleg).padStart(4,"0")}</div>
+    <div style="flex:1;font-size:12.5px">Belegnummer, fortlaufend vergeben. Bleibt bestehen — Fehler werden storniert, nicht gelöscht.</div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Kaufdatum</label><input type="date" id="f_datum" value="${p.datum||today()}"></div>
+    <div class="field"><label>Kaufpreis €</label><input type="text" inputmode="decimal" id="f_betrag" class="num" value="${p.betrag??""}" placeholder="0,00"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Zahlart</label><select id="f_zahlart">${Object.entries(ZAHLART).map(([k,v])=>`<option value="${k}" ${p.zahlart===k?"selected":""}>${v}</option>`).join("")}</select></div>
+    <div class="field"><label>Gefunden über</label><select id="f_plattform">${PLATTFORM.map(v=>`<option ${p.plattform===v?"selected":""}>${v}</option>`).join("")}</select></div>
+  </div>
+  <div id="barHint"></div>
+
+  <h2 style="margin-top:22px">Verkäufer</h2>
+  <div class="field"><label>Name</label><input id="f_vName" value="${esc(p.vName||"")}" placeholder="Vor- und Nachname" autocapitalize="words"></div>
+  <div class="field"><label>Straße und Nr.</label><input id="f_vStr" value="${esc(p.vStr||"")}" placeholder="Musterweg 4"></div>
+  <div class="row">
+    <div class="field"><label>PLZ, Ort</label><input id="f_vPlz" value="${esc(p.vPlz||"")}" placeholder="24103 Kiel"></div>
+    <div class="field"><label>Nutzername</label><input id="f_vNick" value="${esc(p.vNick||"")}" placeholder="optional"></div>
+  </div>
+  <p class="hint">Ohne Name und Anschrift des Zahlungsempfängers darf das Finanzamt den Betriebsausgabenabzug streichen (§ 160 AO). Der Nutzername allein reicht nicht — frag beim Abholen kurz nach.</p>
+
+  <h2 style="margin-top:22px">Nachweise</h2>
+  <div class="shots" id="shotGrid"></div>
+  <p class="hint">Foto der Ware, Screenshot der Anzeige, Chatverlauf und Zahlungsnachweis. Je mehr davon, desto weniger Rückfragen.</p>
+
+  <h2 style="margin-top:22px">Was hast du gekauft?</h2>
+  <div class="field"><select id="f_typ">
+    <option value="einzel" ${p.typ!=="konvolut"?"selected":""}>Einzelstück</option>
+    <option value="konvolut" ${p.typ==="konvolut"?"selected":""}>Konvolut / Kiste</option>
+  </select></div>
+  <div id="posWrap"></div>
+
+  <div class="field" style="margin-top:18px"><label>Notiz</label><textarea id="f_notiz" placeholder="Zustand, Abholort, Besonderheiten">${esc(p.notiz||"")}</textarea></div>
+  ${isNew?"":`<button class="btn danger" id="stornoBtn" style="margin-top:6px">${p.storno?"Storno aufheben":"Beleg stornieren"}</button>`}`;
+}
+
+function renderShots(){
+  const d = S.draft;
+  const g = document.getElementById("shotGrid"); if(!g) return;
+  g.innerHTML = d.shots.map(s=>`
+    <div class="shot"><img src="${shotURL(s.id, s.blob)}" alt="${SHOT[s.kind]}">
+      <button class="del" data-rmshot="${s.id}" aria-label="Entfernen">×</button>
+      <div class="kindlab">${SHOT[s.kind]}</div></div>`).join("")
+    + Object.entries(SHOT).filter(([k])=>!d.shots.some(s=>s.kind===k)).map(([k,v])=>`
+    <button class="shot add" data-addshot="${k}"><span>+</span><span>${v}</span></button>`).join("");
+}
+
+function renderPositions(){
+  const d = S.draft, typ = document.getElementById("f_typ").value;
+  const w = document.getElementById("posWrap");
+  const gesamt = num(val("f_betrag"));
+  if(typ==="einzel"){
+    if(d.items.length!==1) d.items = [{id:d.items[0]?.id||uid(), bez:d.items[0]?.bez||"", ek:gesamt, sale:d.items[0]?.sale||null}];
+    d.items[0].ek = gesamt;
+    w.innerHTML = `<div class="field"><label>Bezeichnung</label><input id="p_bez_0" value="${esc(d.items[0].bez||"")}" placeholder="z. B. Nintendo 64 mit 2 Controllern"></div>
+      <p class="hint">Einkaufswert dieser Position: <b class="mono">${eur(gesamt)}</b></p>`;
+    document.getElementById("p_bez_0").oninput = e => d.items[0].bez = e.target.value;
+  } else {
+    if(d.items.length<1) d.items = [{id:uid(),bez:"",ek:0,sale:null}];
+    const auto = d.items.length ? gesamt/d.items.length : 0;
+    w.innerHTML = d.items.map((it,ix)=>`
+      <div class="pos">
+        <div class="hd"><span class="ix">${String(ix+1).padStart(2,"0")}</span>
+          <input data-pbez="${it.id}" value="${esc(it.bez||"")}" placeholder="Bezeichnung">
+          ${it.sale?"":`<button class="rm" data-prm="${it.id}">Weg</button>`}</div>
+        <div class="row"><div class="field" style="margin:0"><label>Anteiliger Einkauf €</label>
+          <input class="num" inputmode="decimal" data-pek="${it.id}" value="${it.ek?String(it.ek).replace(".",","):""}" placeholder="${auto.toFixed(2).replace(".",",")}"></div></div>
+        ${it.sale?`<p class="hint" style="margin-top:8px">Verkauft am ${dstr(it.sale.datum)} für ${eur(it.sale.vk)}</p>`:""}
+      </div>`).join("")
+      + `<button class="btn ghost" id="posAdd">Position hinzufügen</button>
+         <button class="btn ghost" id="posSplit" style="margin-top:8px">Kaufpreis gleichmäßig aufteilen</button>
+         <p class="hint" id="posSum"></p>`;
+    w.querySelectorAll("[data-pbez]").forEach(el=> el.oninput = e=>{ const it=d.items.find(x=>x.id===el.dataset.pbez); it.bez=e.target.value; });
+    w.querySelectorAll("[data-pek]").forEach(el=> el.oninput = e=>{ const it=d.items.find(x=>x.id===el.dataset.pek); it.ek=num(e.target.value); updatePosSum(); });
+    w.querySelectorAll("[data-prm]").forEach(el=> el.onclick = ()=>{ d.items = d.items.filter(x=>x.id!==el.dataset.prm); renderPositions(); });
+    document.getElementById("posAdd").onclick = ()=>{ d.items.push({id:uid(),bez:"",ek:0,sale:null}); renderPositions(); };
+    document.getElementById("posSplit").onclick = ()=>{
+      const n = d.items.length, base = Math.floor(gesamt/n*100)/100;
+      d.items.forEach((it,i)=> it.ek = i===n-1 ? Math.round((gesamt-base*(n-1))*100)/100 : base);
+      renderPositions();
+    };
+    updatePosSum();
+  }
+}
+function updatePosSum(){
+  const el = document.getElementById("posSum"); if(!el) return;
+  const s = S.draft.items.reduce((a,i)=>a+num(i.ek),0), g = num(val("f_betrag")), diff = Math.round((g-s)*100)/100;
+  el.innerHTML = `Verteilt: <b class="mono">${eur(s)}</b> von <b class="mono">${eur(g)}</b>` +
+    (Math.abs(diff)>0.005 ? ` · <span style="color:var(--stamp)">noch ${eur(diff)} offen</span>` : ` · <span style="color:var(--ok)">passt</span>`);
+}
+function updateBarHint(){
+  const el = document.getElementById("barHint"); if(!el) return;
+  el.innerHTML = val("f_zahlart")==="bar"
+    ? `<div class="banner warn" style="margin:0 0 12px"><b>Barzahlung.</b> Hier trägt allein dein Eigenbeleg. Verkäufername und Anschrift sind jetzt Pflicht, dazu ein Foto der Ware und der Anzeige.</div>` : "";
+}
+
+function openPurchase(id){
+  const p = id ? S.purchases.find(x=>x.id===id) : {year:S.year, datum:today(), zahlart:"ueberweisung", plattform:"Kleinanzeigen", typ:"einzel"};
+  const existing = id ? S.items.filter(i=>i.purchaseId===id) : [];
+  S.draft = {
+    id: id||null,
+    shots: [],
+    items: existing.map(i=>({id:i.id,bez:i.bez,ek:i.ek,sale:i.sale}))
+  };
+  if(id) loadShots(p);
+  openSheet(id ? "Beleg "+String(p.beleg).padStart(4,"0") : "Neuer Ankauf", purchaseForm(p), ()=>savePurchase(p), "Sichern");
+  bindPurchaseForm(p);
+}
+async function loadShots(p){
+  for(const s of (p.shots||[])){
+    const rec = await getOne("images", s.id);
+    if(rec) S.draft.shots.push({id:s.id, kind:s.kind, blob:rec.blob});
+  }
+  renderShots();
+}
+function bindPurchaseForm(p){
+  renderShots(); renderPositions(); updateBarHint();
+  document.getElementById("f_typ").onchange = renderPositions;
+  document.getElementById("f_betrag").oninput = ()=>{ const t=document.getElementById("f_typ").value; if(t==="einzel") renderPositions(); else updatePosSum(); };
+  document.getElementById("f_zahlart").onchange = updateBarHint;
+  const sb = document.getElementById("stornoBtn");
+  if(sb) sb.onclick = async ()=>{
+    const cur = S.purchases.find(x=>x.id===p.id);
+    if(!cur.storno && !confirm("Beleg stornieren? Er bleibt in der Nummernfolge stehen und wird als storniert gedruckt.")) return;
+    cur.storno = !cur.storno; await put("purchases",cur); closeSheet(); render(); toast(cur.storno?"Beleg storniert":"Storno aufgehoben");
+  };
+}
+async function savePurchase(p){
+  const d = S.draft;
+  const betrag = num(val("f_betrag"));
+  if(!betrag){ toast("Kaufpreis fehlt"); return; }
+  const typ = val("f_typ");
+  if(typ==="konvolut"){
+    const s = d.items.reduce((a,i)=>a+num(i.ek),0);
+    if(Math.abs(s-betrag)>0.02 && !confirm(`Die Positionen ergeben ${eur(s)}, der Kaufpreis ist ${eur(betrag)}. Trotzdem sichern?`)) return;
+  }
+  const datum = val("f_datum")||today();
+  const year = parseInt(datum.slice(0,4),10);
+  const rec = {
+    id: d.id || uid(),
+    year: p.id ? p.year : year,
+    beleg: p.id ? p.beleg : nextBeleg(year),
+    datum, betrag,
+    zahlart: val("f_zahlart"), plattform: val("f_plattform"),
+    vName: val("f_vName"), vStr: val("f_vStr"), vPlz: val("f_vPlz"), vNick: val("f_vNick"),
+    typ, notiz: val("f_notiz"),
+    bez: typ==="konvolut" ? (d.items.map(i=>i.bez).filter(Boolean).slice(0,2).join(", ") || "Konvolut") : (d.items[0]?.bez||""),
+    storno: p.storno||false,
+    created: p.created || Date.now(),
+    shots: d.shots.map(s=>({id:s.id, kind:s.kind}))
+  };
+  for(const s of d.shots) await put("images",{id:s.id, blob:s.blob, purchaseId:rec.id});
+  const oldIds = S.items.filter(i=>i.purchaseId===rec.id).map(i=>i.id);
+  for(const oid of oldIds) if(!d.items.some(i=>i.id===oid)) await del("items",oid);
+  for(const i of d.items){
+    await put("items",{id:i.id, purchaseId:rec.id, year:rec.year, bez:i.bez||rec.bez||"Position", ek:num(i.ek)||(typ==="einzel"?betrag:0), sale:i.sale||null});
+  }
+  await put("purchases",rec);
+  await reload(); closeSheet();
+  toast(p.id ? "Beleg aktualisiert" : `Beleg ${String(rec.beleg).padStart(4,"0")} angelegt`);
+}
+
+/* ---------------- Verkauf ---------------- */
+function openItem(id){
+  const it = S.items.find(x=>x.id===id); if(!it) return;
+  const p = S.purchases.find(x=>x.id===it.purchaseId)||{};
+  const s = it.sale||{};
+  openSheet(it.bez||"Position", `
+    <div class="card pad" style="margin-bottom:16px">
+      <div class="dl"><dt>Beleg</dt><dd>EB-${p.year}-${String(p.beleg).padStart(4,"0")}</dd></div>
+      <div class="dl"><dt>Angekauft</dt><dd>${dstr(p.datum)}</dd></div>
+      <div class="dl"><dt>Einkaufswert</dt><dd>${eur(it.ek)}</dd></div>
+    </div>
+    <div class="field"><label>Bezeichnung</label><input id="i_bez" value="${esc(it.bez||"")}"></div>
+    <h2>Verkauf</h2>
+    <div class="row">
+      <div class="field"><label>Verkaufsdatum</label><input type="date" id="i_datum" value="${s.datum||""}"></div>
+      <div class="field"><label>Plattform</label><select id="i_plat">${VK_PLATTFORM.map(v=>`<option ${s.plattform===v?"selected":""}>${v}</option>`).join("")}</select></div>
+    </div>
+    <div class="field"><label>Verkaufspreis brutto €</label><input class="num" inputmode="decimal" id="i_vk" value="${s.vk??""}" placeholder="0,00"></div>
+    <div class="row">
+      <div class="field"><label>Gebühren €</label><input class="num" inputmode="decimal" id="i_geb" value="${s.gebuehren??""}" placeholder="0,00"></div>
+      <div class="field"><label>Porto €</label><input class="num" inputmode="decimal" id="i_porto" value="${s.porto??""}" placeholder="0,00"></div>
+    </div>
+    <div class="field"><label>Verpackung €</label><input class="num" inputmode="decimal" id="i_verp" value="${s.verpackung??""}" placeholder="0,00"></div>
+    <div class="banner info" id="i_calc"></div>
+    ${it.sale?`<button class="btn danger" id="i_undo">Verkauf zurücknehmen</button>`:""}
+  `, ()=>saveItem(it), "Sichern");
+  const upd = ()=>{
+    const vk = num(val("i_vk")), diff = vk-num(it.ek);
+    const net = vk-num(val("i_geb"))-num(val("i_porto"))-num(val("i_verp"))-num(it.ek);
+    document.getElementById("i_calc").innerHTML =
+      `<div class="dl"><dt>Differenz § 25a (VK − EK)</dt><dd>${eur(diff)}</dd></div>
+       <div class="dl"><dt>Nach allen Kosten</dt><dd style="color:${net<0?"var(--stamp)":"var(--ok)"}">${eur(net)}</dd></div>`;
+  };
+  ["i_vk","i_geb","i_porto","i_verp"].forEach(k=> document.getElementById(k).oninput = upd);
+  upd();
+  const u = document.getElementById("i_undo");
+  if(u) u.onclick = async ()=>{ it.sale=null; await put("items",it); await reload(); closeSheet(); toast("Verkauf zurückgenommen"); };
+}
+async function saveItem(it){
+  it.bez = val("i_bez")||it.bez;
+  const datum = val("i_datum"), vk = num(val("i_vk"));
+  if(datum && vk){
+    it.sale = {datum, plattform: val("i_plat"), vk, gebuehren:num(val("i_geb")), porto:num(val("i_porto")), verpackung:num(val("i_verp"))};
+  } else if(datum || vk){ toast("Datum und Verkaufspreis gehören zusammen"); return; }
+  await put("items",it); await reload(); closeSheet(); toast("Gesichert");
+}
+
+/* ---------------- Kosten ---------------- */
+function openCost(id){
+  const e = id ? S.expenses.find(x=>x.id===id) : {datum:today(), kat:"fahrt"};
+  openSheet(id?"Kosten":"Kosten erfassen", `
+    <div class="row">
+      <div class="field"><label>Datum</label><input type="date" id="c_datum" value="${e.datum||today()}"></div>
+      <div class="field"><label>Art</label><select id="c_kat">${Object.entries(KAT).map(([k,v])=>`<option value="${k}" ${e.kat===k?"selected":""}>${v}</option>`).join("")}</select></div>
+    </div>
+    <div id="c_km"></div>
+    <div class="field"><label>Betrag €</label><input class="num" inputmode="decimal" id="c_betrag" value="${e.betrag??""}" placeholder="0,00"></div>
+    <div class="field"><label>Notiz</label><input id="c_notiz" value="${esc(e.notiz||"")}" placeholder="Wofür?"></div>
+    ${id?`<button class="btn danger" id="c_del">Löschen</button>`:""}
+  `, ()=>saveCost(e), "Sichern");
+  const kmBox = ()=>{
+    const isFahrt = val("c_kat")==="fahrt";
+    document.getElementById("c_km").innerHTML = isFahrt
+      ? `<div class="field"><label>Gefahrene Kilometer</label><input class="num" inputmode="decimal" id="c_kmv" value="${e.km??""}" placeholder="0"></div>
+         <p class="hint" style="margin:-6px 0 12px">${KM_SATZ.toFixed(2).replace(".",",")} € je gefahrenem Kilometer — der Betrag rechnet sich selbst.</p>` : "";
+    const f = document.getElementById("c_kmv");
+    if(f) f.oninput = ()=> document.getElementById("c_betrag").value = (num(f.value)*KM_SATZ).toFixed(2).replace(".",",");
+  };
+  document.getElementById("c_kat").onchange = kmBox; kmBox();
+  const dl = document.getElementById("c_del");
+  if(dl) dl.onclick = async ()=>{ if(!confirm("Diesen Kostenposten löschen?")) return; await del("expenses",e.id); await reload(); closeSheet(); toast("Gelöscht"); };
+}
+async function saveCost(e){
+  const betrag = num(val("c_betrag"));
+  if(!betrag){ toast("Betrag fehlt"); return; }
+  const datum = val("c_datum")||today();
+  await put("expenses",{id:e.id||uid(), year:parseInt(datum.slice(0,4),10), datum, kat:val("c_kat"), betrag, km:num(val("c_kmv")||0)||null, notiz:val("c_notiz")});
+  await reload(); closeSheet(); toast("Gesichert");
+}
+
+/* ---------------- Stammdaten ---------------- */
+function openStamm(){
+  const m = S.meta;
+  openSheet("Stammdaten", `
+    <p class="hint" style="margin-bottom:16px">Diese Angaben stehen auf jedem gedruckten Eigenbeleg.</p>
+    <div class="field"><label>Name</label><input id="s_name" value="${esc(m.name||"")}" autocapitalize="words"></div>
+    <div class="field"><label>Gewerbebezeichnung</label><input id="s_firma" value="${esc(m.firma||"")}" placeholder="An- und Verkauf von Gebrauchtwaren"></div>
+    <div class="field"><label>Straße und Nr.</label><input id="s_strasse" value="${esc(m.strasse||"")}"></div>
+    <div class="field"><label>PLZ, Ort</label><input id="s_plzOrt" value="${esc(m.plzOrt||"")}"></div>
+    <div class="field"><label>Steuernummer</label><input id="s_stnr" value="${esc(m.stnr||"")}"></div>
+    <div class="banner info">Kleinunternehmer nach § 19 UStG: du weist keine Umsatzsteuer aus und ziehst aus Privatankäufen ohnehin keine Vorsteuer. Die § 25a-Spalten laufen trotzdem mit, damit die Zahlen da sind, falls du die Grenze reißt.</div>
+  `, async ()=>{
+    Object.assign(S.meta, {name:val("s_name"), firma:val("s_firma"), strasse:val("s_strasse"), plzOrt:val("s_plzOrt"), stnr:val("s_stnr")});
+    await put("meta",{id:"stamm", ...S.meta}); closeSheet(); render(); toast("Gesichert");
+  }, "Sichern");
+}
+
+/* ---------------- Sicherung ---------------- */
+function download(name, blob){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+async function backup(){
+  toast("Sicherung wird gepackt …");
+  const imgs = await all("images");
+  const out = {app:"ankaufsbuch", v:1, exported:new Date().toISOString(),
+    meta:S.meta, purchases:S.purchases, items:S.items, expenses:S.expenses, images:[]};
+  for(const im of imgs) out.images.push({id:im.id, purchaseId:im.purchaseId, data:await blobToB64(im.blob)});
+  download(`ankaufsbuch-sicherung-${today()}.json`, new Blob([JSON.stringify(out)],{type:"application/json"}));
+  S.meta.lastBackup = Date.now(); await put("meta",{id:"stamm", ...S.meta});
+  render(); toast("Sicherung erstellt");
+}
+async function restore(file){
+  try{
+    const d = JSON.parse(await file.text());
+    if(d.app!=="ankaufsbuch") throw 0;
+    let n = 0;
+    for(const p of d.purchases||[]) if(!S.purchases.some(x=>x.id===p.id)){ await put("purchases",p); n++; }
+    for(const i of d.items||[]) if(!S.items.some(x=>x.id===i.id)) await put("items",i);
+    for(const e of d.expenses||[]) if(!S.expenses.some(x=>x.id===e.id)) await put("expenses",e);
+    for(const im of d.images||[]) if(!await getOne("images",im.id)) await put("images",{id:im.id, purchaseId:im.purchaseId, blob:b64ToBlob(im.data)});
+    if(d.meta && !S.meta.name){ S.meta = {...d.meta, lastBackup:S.meta.lastBackup}; await put("meta",{id:"stamm",...S.meta}); }
+    await reload(); toast(`${n} Belege ergänzt`);
+  }catch(e){ toast("Datei nicht lesbar"); }
+}
+function csv(){
+  const q = s => `"${String(s??"").replace(/"/g,'""')}"`;
+  const L = [];
+  L.push("ANKAEUFE");
+  L.push(["Beleg","Datum","Kaufpreis","Zahlart","Verkäufer","Straße","PLZ Ort","Nutzername","Gefunden über","Belegqualität","Storno","Notiz"].map(q).join(";"));
+  S.purchases.filter(p=>inYear(p,S.year)).sort((a,b)=>a.beleg-b.beleg).forEach(p=>
+    L.push([`EB-${p.year}-${String(p.beleg).padStart(4,"0")}`,p.datum,num(p.betrag).toFixed(2).replace(".",","),ZAHLART[p.zahlart],p.vName,p.vStr,p.vPlz,p.vNick,p.plattform,QUALTXT[belegQual(p)],p.storno?"ja":"",p.notiz].map(q).join(";")));
+  L.push("","POSITIONEN");
+  L.push(["Beleg","Position","Einkauf","Verkaufsdatum","Plattform","Verkauf","Gebühren","Porto","Verpackung","Differenz 25a"].map(q).join(";"));
+  yearItems().forEach(i=>{
+    const p = S.purchases.find(x=>x.id===i.purchaseId)||{}; const s = i.sale||{};
+    L.push([`EB-${p.year}-${String(p.beleg||0).padStart(4,"0")}`,i.bez,num(i.ek).toFixed(2).replace(".",","),s.datum||"",s.plattform||"",
+      s.vk?num(s.vk).toFixed(2).replace(".",","):"",s.gebuehren?num(s.gebuehren).toFixed(2).replace(".",","):"",
+      s.porto?num(s.porto).toFixed(2).replace(".",","):"",s.verpackung?num(s.verpackung).toFixed(2).replace(".",","):"",
+      s.vk?(num(s.vk)-num(i.ek)).toFixed(2).replace(".",","):""].map(q).join(";"));
+  });
+  L.push("","KOSTEN");
+  L.push(["Datum","Art","Betrag","km","Notiz"].map(q).join(";"));
+  S.expenses.filter(e=>inYear(e,S.year)).sort((a,b)=>a.datum<b.datum?-1:1).forEach(e=>
+    L.push([e.datum,KAT[e.kat],num(e.betrag).toFixed(2).replace(".",","),e.km||"",e.notiz].map(q).join(";")));
+  download(`ankaufsbuch-${S.year}.csv`, new Blob(["\ufeff"+L.join("\n")],{type:"text/csv;charset=utf-8"}));
+  toast("CSV erstellt");
+}
+
+/* ---------------- Druckausgaben ---------------- */
+function phead(t,s){
+  const m = S.meta;
+  return `<div class="phd"><h1>${t}</h1><div class="sub">${esc(m.name||"—")}${m.firma?" · "+esc(m.firma):""}${m.stnr?" · St.-Nr. "+esc(m.stnr):""}<br>Geschäftsjahr ${S.year}${s?" · "+s:""} · erstellt am ${new Date().toLocaleDateString("de-DE")}</div></div>`;
+}
+function pJournal(){
+  const ps = S.purchases.filter(p=>inYear(p,S.year)).sort((a,b)=>a.beleg-b.beleg);
+  const sum = ps.filter(p=>!p.storno).reduce((a,p)=>a+num(p.betrag),0);
+  return `<div class="page">${phead("Ankaufsjournal","Wareneinkauf von Privat")}
+  <table class="ptbl"><thead><tr><th>Beleg</th><th>Datum</th><th>Gegenstand</th><th>Verkäufer</th><th>Zahlart</th><th>Nachweis</th><th style="text-align:right">Betrag</th></tr></thead><tbody>
+  ${ps.map(p=>`<tr${p.storno?' style="color:#888"':''}><td class="mono">${String(p.beleg).padStart(4,"0")}</td><td>${dstr(p.datum)}</td>
+    <td>${esc(p.bez||"—")}${p.storno?" <b>(storniert)</b>":""}</td>
+    <td>${esc([p.vName,p.vPlz].filter(Boolean).join(", ")||p.vNick||"—")}</td>
+    <td>${ZAHLART[p.zahlart]||"—"}</td><td>${QUALTXT[belegQual(p)]}</td>
+    <td class="n">${p.storno?"—":num(p.betrag).toFixed(2).replace(".",",")}</td></tr>`).join("")}
+  </tbody></table>
+  <div class="ptot">Wareneinkauf ${S.year}: ${eur(sum)}</div>
+  <p class="pnote">Fortlaufende Belegnummern EB-${S.year}-0001 bis EB-${S.year}-${String(ps.length?ps[ps.length-1].beleg:0).padStart(4,"0")}, ohne Lücken. Stornierte Belege bleiben in der Nummernfolge und gehen nicht in die Summe ein.</p></div>`;
+}
+function pBelege(){
+  const m = S.meta;
+  return S.purchases.filter(p=>inYear(p,S.year)).sort((a,b)=>a.beleg-b.beleg).map(p=>{
+    const its = S.items.filter(i=>i.purchaseId===p.id);
+    const shots = (p.shots||[]).map(s=>{ const rec = S.imgCache?.[s.id]; return rec?`<figure><img src="${rec}"><figcaption>${SHOT[s.kind]}</figcaption></figure>`:""; }).join("");
+    return `<div class="page">${phead("Eigenbeleg","Beleg EB-"+p.year+"-"+String(p.beleg).padStart(4,"0"))}
+    ${p.storno?'<div class="ebox" style="border-width:2pt"><b>STORNIERT — dieser Beleg ist gegenstandslos.</b></div>':""}
+    <div class="ebox"><div class="egrid">
+      <div class="k">Belegnummer</div><div class="mono"><b>EB-${p.year}-${String(p.beleg).padStart(4,"0")}</b></div>
+      <div class="k">Kaufdatum</div><div>${dstr(p.datum)}</div>
+      <div class="k">Gegenstand</div><div>${its.length>1?its.map((i,x)=>`${x+1}. ${esc(i.bez)} — ${eur(i.ek)}`).join("<br>"):esc(its[0]?.bez||p.bez||"—")}</div>
+      <div class="k">Betrag</div><div class="mono"><b>${eur(p.betrag)}</b></div>
+      <div class="k">Zahlart</div><div>${ZAHLART[p.zahlart]||"—"}</div>
+      <div class="k">Empfänger</div><div>${esc(p.vName||"— nicht erfasst —")}<br>${esc(p.vStr||"")}<br>${esc(p.vPlz||"")}${p.vNick?"<br>Nutzername: "+esc(p.vNick):""}</div>
+      <div class="k">Erworben über</div><div>${esc(p.plattform||"—")}</div>
+      <div class="k">Grund des Eigenbelegs</div><div>Kauf von einer Privatperson; der Verkäufer stellt keine Rechnung und keine Quittung aus.</div>
+      <div class="k">Vorsteuer</div><div>Kein Vorsteuerabzug — Erwerb von einer Privatperson.</div>
+      ${p.notiz?`<div class="k">Notiz</div><div>${esc(p.notiz)}</div>`:""}
+      <div class="k">Aussteller</div><div>${esc(m.name||"—")}${m.strasse?", "+esc(m.strasse):""}${m.plzOrt?", "+esc(m.plzOrt):""}</div>
+      <div class="k">Ausgestellt am</div><div>${new Date().toLocaleDateString("de-DE")}</div>
+    </div>
+    <div class="esig"><div>Unterschrift Aussteller</div><div>Unterschrift Verkäufer (falls erreichbar)</div></div></div>
+    ${shots?`<div class="pimgs">${shots}</div>`:'<p class="pnote">Keine Bildnachweise hinterlegt.</p>'}
+    </div>`;
+  }).join("");
+}
+function pMarge(){
+  const sold = yearItems().filter(i=>i.sale && i.sale.datum.slice(0,4)==String(S.year));
+  const eSum = sold.reduce((a,i)=>a+num(i.ek),0), vSum = sold.reduce((a,i)=>a+num(i.sale.vk),0);
+  const unter = sold.filter(i=>num(i.ek)<=750);
+  return `<div class="page">${phead("Aufstellung nach § 25a UStG","Einzeldifferenz je Gegenstand")}
+  <table class="ptbl"><thead><tr><th>Beleg</th><th>Gegenstand</th><th>Verkauft am</th><th>Plattform</th><th style="text-align:right">Einkauf</th><th style="text-align:right">Verkauf</th><th style="text-align:right">Differenz</th></tr></thead><tbody>
+  ${sold.map(i=>{const p=S.purchases.find(x=>x.id===i.purchaseId)||{};return `<tr><td class="mono">${String(p.beleg||0).padStart(4,"0")}</td><td>${esc(i.bez)}</td><td>${dstr(i.sale.datum)}</td><td>${esc(i.sale.plattform||"")}</td>
+    <td class="n">${num(i.ek).toFixed(2).replace(".",",")}</td><td class="n">${num(i.sale.vk).toFixed(2).replace(".",",")}</td>
+    <td class="n">${(num(i.sale.vk)-num(i.ek)).toFixed(2).replace(".",",")}</td></tr>`;}).join("")}
+  </tbody></table>
+  <div class="ptot">Summe Einkauf ${eur(eSum)} · Summe Verkauf ${eur(vSum)} · Gesamtdifferenz ${eur(vSum-eSum)}</div>
+  <p class="pnote">Erstellt als Vorsorge. Aktuell wird die Kleinunternehmerregelung nach § 19 UStG angewandt, Umsatzsteuer wird nicht ausgewiesen.<br>
+  Die Besteuerung nach der Gesamtdifferenz setzt voraus, dass der Einkaufspreis je Gegenstand 750 € nicht übersteigt (§ 25a Abs. 4 S. 2 UStG, seit 1.1.2025). Davon erfüllen ${unter.length} von ${sold.length} Positionen die Voraussetzung.</p></div>`;
+}
+function pLager(){
+  const l = yearItems().filter(i=>!i.sale);
+  return `<div class="page">${phead("Lagerliste zum 31.12."+S.year,"Nicht verkaufte Ware")}
+  <table class="ptbl"><thead><tr><th>Beleg</th><th>Angekauft</th><th>Gegenstand</th><th style="text-align:right">Einkaufswert</th></tr></thead><tbody>
+  ${l.map(i=>{const p=S.purchases.find(x=>x.id===i.purchaseId)||{};return `<tr><td class="mono">${String(p.beleg||0).padStart(4,"0")}</td><td>${dstr(p.datum)}</td><td>${esc(i.bez)}</td><td class="n">${num(i.ek).toFixed(2).replace(".",",")}</td></tr>`;}).join("")}
+  </tbody></table><div class="ptot">Lagerwert: ${eur(l.reduce((a,i)=>a+num(i.ek),0))} · ${l.length} Positionen</div></div>`;
+}
+function pKosten(){
+  const es = S.expenses.filter(e=>inYear(e,S.year)).sort((a,b)=>a.datum<b.datum?-1:1);
+  const sold = yearItems().filter(i=>i.sale && i.sale.datum.slice(0,4)==String(S.year));
+  const geb = sold.reduce((a,i)=>a+num(i.sale.gebuehren),0), por = sold.reduce((a,i)=>a+num(i.sale.porto),0), ver = sold.reduce((a,i)=>a+num(i.sale.verpackung),0);
+  const sum = es.reduce((a,e)=>a+num(e.betrag),0);
+  return `<div class="page">${phead("Kostenaufstellung","Betriebsausgaben neben dem Wareneinkauf")}
+  <table class="ptbl"><thead><tr><th>Datum</th><th>Art</th><th>Notiz</th><th style="text-align:right">km</th><th style="text-align:right">Betrag</th></tr></thead><tbody>
+  ${es.map(e=>`<tr><td>${dstr(e.datum)}</td><td>${KAT[e.kat]||e.kat}</td><td>${esc(e.notiz||"")}</td><td class="n">${e.km||""}</td><td class="n">${num(e.betrag).toFixed(2).replace(".",",")}</td></tr>`).join("")}
+  </tbody></table>
+  <h3 class="psec">Aus Verkäufen gebucht</h3>
+  <table class="ptbl"><tbody>
+    <tr><td>Plattformgebühren</td><td class="n">${geb.toFixed(2).replace(".",",")}</td></tr>
+    <tr><td>Porto</td><td class="n">${por.toFixed(2).replace(".",",")}</td></tr>
+    <tr><td>Verpackung</td><td class="n">${ver.toFixed(2).replace(".",",")}</td></tr>
+  </tbody></table>
+  <div class="ptot">Kosten gesamt: ${eur(sum+geb+por+ver)}</div>
+  <p class="pnote">Fahrtkosten mit ${KM_SATZ.toFixed(2).replace(".",",")} € je gefahrenem Kilometer angesetzt.</p></div>`;
+}
+function pVerfahren(){
+  const m = S.meta;
+  return `<div class="page">${phead("Verfahrensdokumentation","Führung des Ankaufsbuchs")}
+  <div class="ptext">
+  <h3 class="psec">1. Gegenstand</h3>
+  <p>${esc(m.name||"—")}${m.firma?", "+esc(m.firma):""} kauft gebrauchte Waren überwiegend von Privatpersonen an und verkauft sie über Online-Plattformen weiter. Da Privatverkäufer keine Rechnung und regelmäßig keine Quittung ausstellen, wird für jeden Ankauf ein Eigenbeleg erstellt.</p>
+  <h3 class="psec">2. Erfassung</h3>
+  <ul>
+    <li>Jeder Ankauf wird zeitnah am Kauftag erfasst, in einer lokalen Anwendung auf einem mobilen Endgerät.</li>
+    <li>Erfasst werden: Kaufdatum, Kaufpreis, Zahlart, Name und Anschrift des Zahlungsempfängers, Nutzername der Plattform, Herkunft des Angebots, Bezeichnung des Gegenstands sowie eine Notiz.</li>
+    <li>Als Nachweis werden Fotos der Ware sowie Bildschirmfotos der Anzeige, des Nachrichtenverlaufs und des Zahlungsnachweises hinterlegt.</li>
+    <li>Konvolute werden in Einzelpositionen zerlegt; der Kaufpreis wird im Wege sachgerechter Schätzung auf die Positionen verteilt.</li>
+  </ul>
+  <h3 class="psec">3. Belegnummern</h3>
+  <p>Belege tragen fortlaufende Nummern im Format EB-JJJJ-NNNN, je Geschäftsjahr bei 0001 beginnend, ohne Lücken. Ein Beleg wird nie gelöscht. Fehlerhafte Belege werden als storniert gekennzeichnet, bleiben in der Nummernfolge und werden mit dem Vermerk „storniert“ ausgegeben.</p>
+  <h3 class="psec">4. Verkauf</h3>
+  <p>Jede Position wird mit ihrem Verkauf verknüpft: Verkaufsdatum, Plattform, Verkaufspreis brutto, Gebühren, Porto und Verpackung. Daraus ergibt sich die Differenz zwischen Verkaufs- und Einkaufspreis je Gegenstand.</p>
+  <h3 class="psec">5. Umsatzsteuer</h3>
+  <p>Es wird die Kleinunternehmerregelung nach § 19 UStG angewandt. Umsatzsteuer wird nicht ausgewiesen. Aus Ankäufen von Privatpersonen besteht kein Vorsteuerabzug. Einkaufspreis, Verkaufspreis und Differenz werden je Gegenstand getrennt aufgezeichnet, damit die Aufzeichnungspflichten des § 25a Abs. 6 UStG bei einem Wechsel zur Regelbesteuerung ohne Nacharbeit erfüllt sind.</p>
+  <h3 class="psec">6. Aufbewahrung und Sicherung</h3>
+  <p>Die Daten liegen auf dem Endgerät. In regelmäßigen Abständen wird eine vollständige Sicherungsdatei einschließlich aller Bildnachweise erzeugt und in einem Cloud-Speicher abgelegt. Zum Jahresabschluss werden Ankaufsjournal, Eigenbelege, Aufstellung nach § 25a, Lagerliste und Kostenaufstellung als PDF erzeugt und unveränderbar archiviert. Buchungsbelege werden acht Jahre aufbewahrt, gerechnet ab dem Schluss des Kalenderjahres ihrer Entstehung (§ 147 AO in der ab 1.1.2025 geltenden Fassung).</p>
+  <h3 class="psec">7. Änderungen</h3>
+  <p>Nachträgliche Korrekturen an einem bereits abgeschlossenen Geschäftsjahr erfolgen nicht am Ursprungsbeleg, sondern durch Storno und Neuerfassung.</p>
+  <p style="margin-top:8mm">Stand: ${new Date().toLocaleDateString("de-DE")}</p>
+  <div class="esig" style="grid-template-columns:1fr"><div>Unterschrift</div></div>
+  </div></div>`;
+}
+async function cacheImages(){
+  S.imgCache = {};
+  const imgs = await all("images");
+  for(const im of imgs) S.imgCache[im.id] = await blobToB64(im.blob);
+}
+async function doPrint(kind){
+  if(kind==="belege" || kind==="alles"){ toast("Bilder werden geladen …"); await cacheImages(); }
+  const parts = {journal:pJournal, belege:pBelege, marge:pMarge, lager:pLager, kosten:pKosten, verfahren:pVerfahren};
+  const html = kind==="alles" ? [pJournal(),pBelege(),pMarge(),pLager(),pKosten(),pVerfahren()].join("") : parts[kind]();
+  document.getElementById("print").innerHTML = html;
+  setTimeout(()=>window.print(), 350);
+}
+
+/* ---------------- Verdrahtung ---------------- */
+document.querySelectorAll("nav button").forEach(b=> b.onclick = ()=>show(b.dataset.v));
+document.getElementById("fab").onclick = ()=>openPurchase(null);
+document.getElementById("shCancel").onclick = closeSheet;
+document.getElementById("shSave").onclick = ()=>{ const f = document.getElementById("sheet")._save; if(f) f(); };
+document.getElementById("stockFilter").onchange = renderStock;
+document.getElementById("addCost").onclick = ()=>openCost(null);
+document.getElementById("yearSel").onchange = e=>{ S.year = parseInt(e.target.value,10); render(); };
+
+document.addEventListener("click", e=>{
+  const o = e.target.closest("[data-open]"); if(o) return openPurchase(o.dataset.open);
+  const it = e.target.closest("[data-item]"); if(it) return openItem(it.dataset.item);
+  const c = e.target.closest("[data-cost]"); if(c) return openCost(c.dataset.cost);
+  const pr = e.target.closest("[data-print]"); if(pr) return doPrint(pr.dataset.print);
+  const a = e.target.closest("[data-act]");
+  if(a){
+    if(a.dataset.act==="backup") return backup();
+    if(a.dataset.act==="restore") return document.getElementById("jsonPick").click();
+    if(a.dataset.act==="csv") return csv();
+    if(a.dataset.act==="stamm") return openStamm();
+  }
+  const add = e.target.closest("[data-addshot]");
+  if(add){ const fp = document.getElementById("filePick"); fp.dataset.kind = add.dataset.addshot; fp.value=""; fp.click(); return; }
+  const rm = e.target.closest("[data-rmshot]");
+  if(rm){ S.draft.shots = S.draft.shots.filter(s=>s.id!==rm.dataset.rmshot); renderShots(); return; }
+});
+document.getElementById("filePick").onchange = async e=>{
+  const f = e.target.files[0]; if(!f || !S.draft) return;
+  toast("Bild wird verkleinert …");
+  const blob = await compress(f);
+  S.draft.shots.push({id:uid(), kind:e.target.dataset.kind, blob});
+  renderShots(); toast("Nachweis hinzugefügt");
+};
+document.getElementById("jsonPick").onchange = e=>{ const f=e.target.files[0]; if(f) restore(f); e.target.value=""; };
+
+/* ---------------- Start ---------------- */
+async function reload(){
+  S.purchases = await all("purchases");
+  S.items = await all("items");
+  S.expenses = await all("expenses");
+  const m = await all("meta");
+  S.meta = m.find(x=>x.id==="stamm") || {};
+  const years = new Set([new Date().getFullYear(), S.year, ...S.purchases.map(p=>p.year), ...S.expenses.map(e=>e.year)]);
+  const ys = [...years].filter(Boolean).sort((a,b)=>b-a);
+  document.getElementById("yearSel").innerHTML = ys.map(y=>`<option value="${y}" ${y===S.year?"selected":""}>${y}</option>`).join("");
+  render();
+}
+(async ()=>{
+  await openDB();
+  // Speicher als dauerhaft anmelden, damit iOS ihn nicht aufräumt
+  try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
+  await reload();
+})();
+// Offline-Cache: einmal geladen, läuft die App auch ohne Netz
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+window.addEventListener("beforeprint", ()=>{});
+window.addEventListener("afterprint", ()=>{ document.getElementById("print").innerHTML=""; });
+</script>
+</body>
+</html>
