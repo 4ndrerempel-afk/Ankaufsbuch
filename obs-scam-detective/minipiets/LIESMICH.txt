@@ -1,0 +1,7 @@
+Hier kommen deine eigenen Mini-Piet-Bilder rein (PNG, GIF oder WebP mit durchsichtigem Hintergrund).
+Am besten hochkant, ungefähr 500 x 600 Pixel.
+
+Danach in config.js eintragen, zum Beispiel:
+  miniPiets: [
+    { name: "Schock", src: "minipiets/schock.png" },
+  ],

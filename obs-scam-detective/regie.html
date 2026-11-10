@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Scam-Detektiv Regie</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: Kopfleiste mit Layout/REC → drei Spalten: Monitor+Werkzeuge | Fall+roter Faden | Einblendungen+Piet+Einstellungen */
+:root{
+  --bg:#0a0d14; --s1:#111723; --s2:#172031; --s3:#1f2a3f; --line:#26324a; --tx:#e8eef8; --mu:#8c9bb4;
+  --alarm:#ff2b3a; --tape:#ffc21a; --clean:#22e39b; --steel:#9fb2cc; --ink:#0a0e17;
+  --f-display:"Anton","Impact","Arial Narrow Bold",sans-serif;
+  --f-ui:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"Barlow","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"JetBrains Mono","Consolas","Menlo",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--tx);font:500 14px/1.35 var(--f-body);display:flex;flex-direction:column;min-height:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--s2);border-radius:6px;padding:7px 10px;font:700 15px/1.1 var(--f-ui);letter-spacing:.05em;transition:background .15s,border-color .15s,transform .08s}
+button:hover{background:var(--s3);border-color:#3a4a69}
+button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--tape);outline-offset:2px}
+button.on{background:var(--tape);color:var(--ink);border-color:var(--tape)}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical;font:500 13px/1.4 var(--f-body)}
+label{display:grid;gap:4px;font:700 12px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mu)}
+kbd{font:700 10px/1 var(--f-mono);padding:2px 4px;border-radius:3px;background:rgba(255,255,255,.08);color:var(--mu);margin-left:6px;vertical-align:1px}
+button.on kbd{background:rgba(0,0,0,.15);color:var(--ink)}
+
+/* Kopf */
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--s1);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .badge{width:38px;height:38px;border-radius:50%;background:var(--alarm);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,43,58,.25)}
+.brand h1{margin:0;font:400 24px/1 var(--f-display);letter-spacing:.06em}
+.brand small{display:block;font:700 11px/1 var(--f-mono);letter-spacing:.18em;color:var(--mu);margin-top:3px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font:700 13px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.pill i{width:9px;height:9px;border-radius:50%;background:var(--mu)}
+.pill.ok i{background:var(--clean);box-shadow:0 0 8px var(--clean)} .pill.warn i{background:var(--tape)} .pill.bad i{background:var(--alarm)}
+.layouts{display:flex;gap:6px;flex-wrap:wrap}
+.layouts button{padding:9px 14px;font-size:17px}
+.layouts button.on[data-l="private"]{background:#cfe0f5;border-color:#cfe0f5}
+.grow{flex:1}
+.rec{display:flex;align-items:center;gap:8px}
+#recBtn{background:var(--s2);border-color:var(--alarm);color:#fff;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:17px}
+#recBtn i{width:12px;height:12px;border-radius:50%;background:var(--alarm)}
+#recBtn.on{background:var(--alarm);color:#fff} #recBtn.on i{background:#fff;border-radius:2px;animation:blink 1s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+#recClock{font:700 22px/1 var(--f-mono);min-width:110px;text-align:right}
+
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) minmax(0,1fr);gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));align-items:start}
+@media (max-width:1500px){main{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)} .col3{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start}}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+section{background:var(--s1);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+section > h2{margin:0 0 10px;display:flex;align-items:center;gap:8px;font:400 19px/1 var(--f-display);letter-spacing:.07em;text-transform:uppercase}
+section > h2 .sub{margin-left:auto;font:700 12px/1 var(--f-mono);letter-spacing:.08em;color:var(--mu);text-transform:none}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hint{color:var(--mu);font-size:12.5px}
+
+/* Monitor */
+.monitor{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:8px;overflow:hidden;background:#05070c;border:1px solid var(--line)}
+.monitor video,.monitor iframe,.monitor canvas{position:absolute;inset:0;width:100%;height:100%;border:0}
+.monitor video{object-fit:fill}
+.monitor iframe{pointer-events:none;background:transparent}
+.monitor canvas{cursor:crosshair;touch-action:none}
+.monitor .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--mu);font:600 15px/1.4 var(--f-ui);letter-spacing:.04em;
+  background:repeating-linear-gradient(45deg,#0b0f18 0 18px,#0d121d 18px 36px)}
+.monitor .empty b{color:var(--tx);font-size:18px}
+.mon-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.tools button{display:inline-flex;align-items:center;gap:6px}
+.tools svg{width:17px;height:17px}
+.swatch{width:30px;height:30px;padding:0;border-radius:50%;border:3px solid transparent}
+.swatch.on{border-color:#fff;background:inherit}
+.stampgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.stampbtn{font:400 18px/1 var(--f-display);letter-spacing:.06em;padding:10px 6px;border:2px solid var(--tone);color:var(--tone);background:color-mix(in srgb,var(--tone) 8%,transparent)}
+.stampbtn small{display:block;font:700 10px/1 var(--f-mono);letter-spacing:.12em;margin-top:4px;opacity:.8}
+.stampbtn:hover{background:color-mix(in srgb,var(--tone) 18%,transparent)}
+.stampbtn.armed{background:var(--tone);color:var(--ink)}
+.t-red{--tone:var(--alarm)} .t-amber{--tone:var(--tape)} .t-mint{--tone:var(--clean)} .t-steel{--tone:var(--steel)}
+
+/* Fall */
+.verdicts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.verdicts button{font:400 22px/1 var(--f-display);letter-spacing:.06em;padding:12px 6px;border:2px solid var(--tone);color:var(--tone);background:transparent}
+.verdicts button.on{background:var(--tone);color:var(--ink)}
+.risk{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+.risk .bar{flex:1;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--clean),var(--tape) 45%,var(--alarm));position:relative}
+.risk .bar i{position:absolute;top:-5px;width:4px;height:22px;background:#fff;border-radius:2px;transform:translateX(-2px);transition:left .5s}
+.risk b{font:700 22px/1 var(--f-mono);min-width:58px;text-align:right}
+.risk span{font:700 14px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;min-width:110px}
+.tallyrow{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.tallyrow .t{display:flex;align-items:center;gap:4px;padding:4px 6px 4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--line);font:700 13px/1 var(--f-ui);letter-spacing:.08em}
+.tallyrow .t b{font:700 16px/1 var(--f-mono);color:var(--tone);min-width:20px;text-align:center}
+.tallyrow .t button{padding:2px 7px;font-size:13px}
+
+/* Checkliste */
+.checks{display:grid;gap:4px;max-height:560px;overflow:auto;padding-right:4px}
+.cgroup{font:700 11px/1 var(--f-mono);letter-spacing:.2em;color:var(--mu);text-transform:uppercase;margin:8px 0 2px}
+.check{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 8px;border-radius:7px;background:var(--s2);border:1px solid transparent;transition:border-color .2s,background .2s}
+.check.s1{border-color:rgba(34,227,155,.45);background:rgba(34,227,155,.07)}
+.check.s2{border-color:rgba(255,43,58,.6);background:rgba(255,43,58,.09)}
+.check .lbl{font:700 16px/1.1 var(--f-ui);letter-spacing:.03em;cursor:pointer}
+.check .lbl em{font:700 10px/1 var(--f-mono);font-style:normal;color:var(--mu);margin-left:6px}
+.check .q{font-size:12.5px;color:var(--mu);margin-top:2px}
+.seg{display:flex;gap:3px}
+.seg button{padding:6px 9px;font-size:13px}
+.seg .ok.on{background:var(--clean);border-color:var(--clean);color:var(--ink)}
+.seg .bad.on{background:var(--alarm);border-color:var(--alarm);color:#fff}
+
+/* Einblendungen */
+.ins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ins button{text-align:left;padding:8px 10px;border-left:4px solid var(--tone);font:700 14px/1.15 var(--f-ui);display:grid;gap:3px;min-width:0}
+.ins button span{font:500 12px/1.25 var(--f-body);color:var(--mu);letter-spacing:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ins button .k{font:700 10px/1 var(--f-mono);letter-spacing:.12em;color:var(--tone);text-transform:uppercase}
+.tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.tabs button{padding:5px 10px;font-size:13px}
+
+/* Mini-Piet */
+.poses{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.poses button{padding:3px;aspect-ratio:5/6;display:grid;place-items:center;background:var(--bg)}
+.poses button svg,.poses button img{width:100%;height:100%;object-fit:contain}
+.poses button.on{background:var(--s3);border-color:var(--tape)}
+.lines{display:grid;gap:4px;margin-top:8px}
+.lines button{text-align:left;font:600 13px/1.2 var(--f-body);letter-spacing:0;padding:6px 9px}
+
+.sounds{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+details{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+details summary{cursor:pointer;font:700 13px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mu);padding:4px 0}
+details[open] summary{color:var(--tx)}
+details > div{display:grid;gap:8px;margin-top:8px}
+.switch{display:flex;align-items:center;gap:8px;font:700 13px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--tx);cursor:pointer}
+.switch input{width:auto;accent-color:var(--tape)}
+input[type=range]{padding:0;accent-color:var(--tape)}
+
+footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:var(--s1);border-top:1px solid var(--line);font:500 12.5px/1.3 var(--f-mono);color:var(--mu)}
+#log{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#log.err{color:var(--alarm)} #log.ok{color:var(--clean)}
+.keys{white-space:nowrap}
+@media (max-width:900px){.keys{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg></div>
+    <div><h1>SCAM-DETEKTIV · REGIE</h1><small>PIET VAN DIJK · ONE-CUT-PULT</small></div>
+  </div>
+  <span class="pill" id="pObs"><i></i><span>OBS</span></span>
+  <span class="pill" id="pOv"><i></i><span>Overlay</span></span>
+  <div class="layouts" id="layouts">
+    <button data-l="full">Cam Vollbild<kbd>1</kbd></button>
+    <button data-l="pip">Screen + Cam<kbd>2</kbd></button>
+    <button data-l="private">Milchglas<kbd>3</kbd></button>
+    <button id="cleanBtn">Clean<kbd>0</kbd></button>
+    <button id="clearFx">Einblendungen weg<kbd>Esc</kbd></button>
+  </div>
+  <div class="grow"></div>
+  <div class="rec"><button id="recBtn"><i></i><span>Aufnahme starten</span></button><div id="recClock">00:00:00</div></div>
+</header>
+
+<main>
+  <!-- Spalte 1: Monitor + Zeichnen + Stempel -->
+  <div class="col">
+    <section>
+      <h2>Monitor &amp; Zeichenbrett <span class="sub" id="monHint">Vorschau = was OBS zeigt</span></h2>
+      <div class="monitor" id="monitor">
+        <div class="empty" id="monEmpty"><div><b>Bildschirm noch nicht geteilt</b><br>„Linken Monitor teilen“ klicken, dann kannst du direkt<br>auf der Anzeige Pfeile, Kreise und Stempel setzen.</div></div>
+        <video id="vid" autoplay muted playsinline></video>
+        <iframe id="pv" src="overlay.html?preview" title="Overlay-Vorschau"></iframe>
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="mon-bar tools" id="tools">
+        <button data-t="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M10 5h9v9"/></svg>Pfeil<kbd>A</kbd></button>
+        <button data-t="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><ellipse cx="12" cy="12" rx="9" ry="7"/></svg>Kreis<kbd>K</kbd></button>
+        <button data-t="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Rahmen<kbd>R</kbd></button>
+        <button data-t="pen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18c4-6 7 2 10-4s4-6 6-6"/></svg>Marker<kbd>M</kbd></button>
+        <button data-t="censor"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="8" width="18" height="8" rx="1"/></svg>Zensur<kbd>Z</kbd></button>
+        <button data-t="spot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Spotlight<kbd>L</kbd></button>
+        <button data-t="stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M9 3h6l-1 8h4v4H6v-4h4zM5 20h14"/></svg>Stempel<kbd>T</kbd></button>
+      </div>
+      <div class="mon-bar">
+        <button class="swatch on" data-c="red" style="background:var(--alarm)" aria-label="Rot"></button>
+        <button class="swatch" data-c="amber" style="background:var(--tape)" aria-label="Gelb"></button>
+        <button class="swatch" data-c="mint" style="background:var(--clean)" aria-label="Grün"></button>
+        <button class="swatch" data-c="white" style="background:#fff" aria-label="Weiß"></button>
+        <div class="grow"></div>
+        <button id="undo">Rückgängig<kbd>⌫</kbd></button>
+        <button id="clearDraw">Alles wegwischen<kbd>Entf</kbd></button>
+        <button id="shareBtn">Linken Monitor teilen</button>
+      </div>
+      <div class="stampgrid" id="stampgrid"></div>
+      <p class="hint" style="margin:8px 0 0">Stempel-Knopf = Stempel groß in die Mitte. Werkzeug „Stempel“ + Klick auf den Monitor = Stempel genau dort. SCAM, VERDÄCHTIG und SAUBER zählen als Urteil in die Strichliste.</p>
+    </section>
+  </div>
+
+  <!-- Spalte 2: Fall + roter Faden -->
+  <div class="col">
+    <section>
+      <h2>Fallakte <span class="sub" id="caseNoLbl">Fall #01</span></h2>
+      <div class="grid2">
+        <label style="grid-column:1/-1">Artikel<input id="fItem" placeholder="z. B. Spielkonsole, neu &amp; OVP"></label>
+        <label>Preis (€)<input id="fPrice" inputmode="decimal" placeholder="220"></label>
+        <label>Marktwert (€)<input id="fMarket" inputmode="decimal" placeholder="480"></label>
+        <label>Verkäufer<input id="fSeller" placeholder="nur Vorname / Kürzel"></label>
+        <label>Aktiv seit<input id="fSince" placeholder="z. B. seit 6 Tagen"></label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label class="switch"><input type="checkbox" id="fOn" checked>Fallakte zeigen</label>
+        <label class="switch"><input type="checkbox" id="fMeter" checked>Scam-o-Meter</label>
+        <div class="grow"></div>
+        <button id="newCase" class="t-amber" style="border-color:var(--tape)">Neuer Fall<kbd>N</kbd></button>
+      </div>
+      <div class="risk"><span id="riskLbl">Noch nichts geprüft</span><div class="bar"><i id="riskMark" style="left:0"></i></div><b id="riskPct">0%</b></div>
+      <div class="verdicts">
+        <button class="t-red" data-v="scam">SCAM<kbd>S</kbd></button>
+        <button class="t-amber" data-v="sus">VERDÄCHTIG<kbd>V</kbd></button>
+        <button class="t-mint" data-v="legit">SAUBER<kbd>G</kbd></button>
+      </div>
+      <div class="tallyrow" id="tallyrow"></div>
+    </section>
+    <section>
+      <h2>Roter Faden <span class="sub" id="chkProg">0 / 15 geprüft</span></h2>
+      <div class="row" style="margin-bottom:6px">
+        <label class="switch"><input type="checkbox" id="autoPop" checked>Bewertung automatisch einblenden</label>
+      </div>
+      <div class="checks" id="checks"></div>
+      <p class="hint" style="margin:8px 0 0">Klick auf den Namen = Frage einblenden („Jetzt prüfe ich …“). ✓ = passt, ! = Warnsignal. Das Scam-o-Meter rechnet die Warnsignale nach Gewicht zusammen.</p>
+    </section>
+  </div>
+
+  <!-- Spalte 3: Einblendungen, Piet, Leisten -->
+  <div class="col col3">
+    <section>
+      <h2>Einblendungen <span class="sub">Katalog</span></h2>
+      <div class="tabs" id="insTabs"></div>
+      <div class="ins" id="ins"></div>
+      <details>
+        <summary>Eigene Einblendung</summary>
+        <div>
+          <label>Überschrift<input id="cTitle" placeholder="z. B. ACHTUNG"></label>
+          <label>Text<input id="cText" placeholder="Was soll stehen?"></label>
+          <div class="grid3">
+            <label>Art<select id="cKind"><option value="alert">Alarm (Mitte)</option><option value="lower">Bauchbinde</option><option value="toast">Hinweis</option><option value="poll">Frage + Countdown</option></select></label>
+            <label>Farbe<select id="cTone"><option value="red">Rot</option><option value="amber">Gelb</option><option value="mint">Grün</option><option value="steel">Grau</option></select></label>
+            <label>Ton<select id="cSound"><option value="">kein</option><option>alarm</option><option>ding</option><option>bling</option><option>whoosh</option><option>buzzer</option><option>tick</option></select></label>
+          </div>
+          <button id="cSend">Einblenden</button>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <h2>Mini-Piet <span class="sub">P = zeigen / weg</span></h2>
+      <div class="poses" id="poses"></div>
+      <div class="row" style="margin-top:8px;flex-wrap:nowrap">
+        <input id="pText" placeholder="Was sagt Mini-Piet?">
+        <button id="pShow">Zeigen</button><button id="pHide">Weg</button>
+      </div>
+      <div class="lines" id="pLines"></div>
+    </section>
+
+    <section>
+      <h2>Ton <span class="sub" id="volLbl">70 %</span></h2>
+      <div class="sounds" id="sounds"></div>
+      <label style="margin-top:8px">Lautstärke<input type="range" id="vol" min="0" max="1" step="0.05" value="0.7"></label>
+    </section>
+
+    <section>
+      <h2>Ablauf &amp; Leisten</h2>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="phPrev" aria-label="Vorige Phase">◀</button>
+        <div style="flex:1;min-width:0;text-align:center"><div id="phName" style="font:400 22px/1 var(--f-display);letter-spacing:.05em">Intro</div><div class="hint" id="phHint"></div></div>
+        <button id="phNext">Weiter<kbd>→</kbd></button>
+      </div>
+      <details open>
+        <summary>Roter Banner oben</summary>
+        <div>
+          <label class="switch"><input type="checkbox" id="bOn" checked>Banner zeigen</label>
+          <label>Laufschrift (eine Zeile = ein Satz)<textarea id="bItems" rows="4"></textarea></label>
+          <label>Tempo<input type="range" id="bSpeed" min="40" max="200" step="10"></label>
+        </div>
+      </details>
+      <details>
+        <summary>Statusleiste &amp; Kamera</summary>
+        <div>
+          <label class="switch"><input type="checkbox" id="sOn" checked>Statusleiste zeigen</label>
+          <label>Live-Text<input id="sLive"></label>
+          <label>Name<input id="hName"></label>
+          <label>Untertitel (Vollbild-Intro)<input id="hRole"></label>
+          <label>Zeile über dem Namen<input id="hKick"></label>
+          <label>Zusatz am Kamerarahmen<input id="camTag"></label>
+          <label class="switch"><input type="checkbox" id="hOn" checked>Namens-Titel im Vollbild</label>
+        </div>
+      </details>
+      <details>
+        <summary>Milchglas / Privatmodus</summary>
+        <div>
+          <label>Überschrift<input id="mTitle"></label>
+          <label>Text<input id="mText"></label>
+          <label>Deckkraft <span id="mOpLbl"></span><input type="range" id="mOp" min="0.6" max="1" step="0.01"></label>
+          <p class="hint" style="margin:0">Mit dem Filter „Milchglas“ in OBS (siehe Anleitung) wird der Bildschirm zusätzlich unscharf. Ohne Filter deckt die Glasfläche ab.</p>
+        </div>
+      </details>
+      <details>
+        <summary>OBS-Verbindung</summary>
+        <div>
+          <div class="grid3"><label>Host<input id="oHost"></label><label>Port<input id="oPort" inputmode="numeric"></label><label>Passwort<input id="oPw" type="password"></label></div>
+          <div class="row"><button id="oSave">Verbinden</button><button id="ovReload">Overlay neu laden</button><button id="resetAll">Alles zurücksetzen</button></div>
+          <p class="hint" style="margin:0">Das Overlay in OBS liest Host, Port und Passwort aus <b>config.js</b>. Trag das Passwort dort auch ein.</p>
+        </div>
+      </details>
+    </section>
+  </div>
+</main>
+
+<footer><span id="log">Bereit.</span><span class="keys">1/2/3 Layout · S/V/G Urteil · A K R M Z L T Werkzeug · N neuer Fall · → Phase · P Piet · Esc weg</span></footer>
+
+<script src="config.js"></script>
+<script src="katalog.js"></script>
+<script src="minipiet.js"></script>
+<script src="piet-link.js"></script>
+<script>
+(function(){
+"use strict";
+const CFG = window.PIET_CONFIG || {}, K = window.PIET_KATALOG;
+const $ = id => document.getElementById(id);
+const rid = () => Math.random().toString(36).slice(2,9);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
+
+/* ---------- Zustand ---------- */
+const DEF = () => ({
+  layout:"full", clean:false, volume:.7,
+  banner:{on:true, speed:90, items:[
+    "Daumen hoch, wenn du Betrüger auch nicht leiden kannst",
+    "Abonnieren für den nächsten Live-Check",
+    "Schreib in die Kommentare: Welchen Artikel prüfe ich als nächstes?",
+    "Live · 1:1 · ohne Schnitt"]},
+  status:{on:true, phase:K.phases[0].id, liveText:"LIVE · 1:1 OHNE SCHNITT"},
+  host:{name:(CFG.host&&CFG.host.name)||"Piet van Dijk", role:(CFG.host&&CFG.host.role)||"Scam-Detektiv"},
+  hostTitle:true, hostKicker:"Live · 1:1 · ohne Schnitt", camTag:"Live · ohne Schnitt",
+  case:{no:1,item:"",price:"",market:"",seller:"",since:"",on:true,verdict:null}, meter:true,
+  tally:{scam:0,sus:0,legit:0}, checks:{}, checkOrder:[],
+  rec:{running:false,start:0,elapsed:0}, draw:[], stamps:[], hist:[],
+  privacy:{title:"Privatmodus", text:"Hier ist kurz Feierabend. Das bleibt privat.", opacity:.94},
+  autoPop:true
+});
+let S = Object.assign(DEF(), store.get("piet-regie") || {});
+S.rec.running = false;   // nach Neuladen nie „läuft“ annehmen
+
+function risk(){
+  let W = 0, flags = 0, oks = 0;
+  K.checks.forEach(c => { const v = S.checks[c.id]; if (v === 2){ W += c.w; flags++; } else if (v === 1) oks++; });
+  const pct = Math.min(100, Math.round(W / 10 * 100));
+  let label = "Noch nichts geprüft", tone = "steel";
+  if (flags || oks){
+    if (pct >= 75){ label = "Alarmstufe Rot"; tone = "red"; }
+    else if (pct >= 50){ label = "Verdächtig"; tone = "amber"; }
+    else if (pct >= 25){ label = "Vorsicht"; tone = "amber"; }
+    else { label = "Unauffällig"; tone = "mint"; }
+  }
+  const list = S.checkOrder.filter(id => S.checks[id]).map(id => { const c = K.checks.find(x => x.id === id); return c && {id, s:S.checks[id], label:c.label, flag:c.flag}; }).filter(Boolean);
+  return {pct, flags, oks, label, tone, list};
+}
+function out(){
+  const o = JSON.parse(JSON.stringify(S));
+  delete o.hist; delete o.checks; delete o.checkOrder; delete o.autoPop;
+  o.phases = K.phases.map(p => ({id:p.id, label:p.label}));
+  o.risk = risk();
+  o.camPip = CFG.camPip;
+  return o;
+}
+let saveT = null;
+function commit(){
+  link.send("state", out());
+  clearTimeout(saveT); saveT = setTimeout(() => store.set("piet-regie", S), 250);
+  paint();
+}
+
+/* ---------- Verbindung ---------- */
+const savedObs = store.get("piet-obs");
+const obsCfg = Object.assign({host:"127.0.0.1", port:4455, password:""}, CFG.obs||{}, savedObs||{});
+const link = new PietLink("regie", { obs: obsCfg, eventMask: 1|4|64 });
+const pv = $("pv");
+pv.addEventListener("load", () => { link.addTarget(pv.contentWindow); link.send("state", out()); });
+let lastHello = 0;
+link.on((type, data, msg) => {
+  if (type === "hello" || type === "alive"){ if (!(data && data.preview)) lastHello = Date.now(); if (type === "hello") link.send("state", out()); }
+});
+link.onStatus((s, err) => {
+  const p = $("pObs"); p.className = "pill " + (s === "verbunden" ? "ok" : s === "verbinde" ? "warn" : s === "fehler" ? "bad" : "");
+  p.querySelector("span").textContent = s === "verbunden" ? "OBS verbunden" : s === "verbinde" ? "OBS …" : "OBS getrennt";
+  p.title = err || "";
+  if (s === "verbunden"){
+    log("OBS verbunden.", "ok");
+    link.send("state", out()); link.send("ping", {});
+    link.request("GetRecordStatus").then(r => setRec(r.outputActive, r.outputDuration)).catch(()=>{});
+  } else if (s === "fehler") log(err, "err");
+});
+link.onObsEvent((type, d) => {
+  if (type === "RecordStateChanged"){
+    if (d.outputState === "OBS_WEBSOCKET_OUTPUT_STARTED") setRec(true, 0);
+    if (d.outputState === "OBS_WEBSOCKET_OUTPUT_STOPPED") setRec(false);
+  }
+  if (type === "CurrentProgramSceneChanged") log("Szene: " + d.sceneName);
+});
+setInterval(() => { link.send("state", out()); link.send("ping", {}); }, 8000);
+setInterval(() => {
+  const ok = Date.now() - lastHello < 30000;
+  const p = $("pOv"); p.className = "pill " + (ok ? "ok" : "warn");
+  p.querySelector("span").textContent = ok ? "Overlay da" : "Overlay ?";
+  p.title = ok ? "Das OBS-Overlay hat sich gemeldet." : "Noch keine Meldung vom Overlay in OBS. Läuft die Browserquelle? Passwort in config.js?";
+}, 1000);
+
+function obs(req, data, quiet){
+  if (link.obsState !== "verbunden") return Promise.resolve(null);
+  return link.request(req, data).catch(err => { if (!quiet) log(req + ": " + err.message, "err"); return null; });
+}
+function log(t, cls){ const l = $("log"); l.textContent = new Date().toLocaleTimeString("de-DE") + " · " + t; l.className = cls || ""; }
+
+/* ---------- Layout ---------- */
+function setLayout(l){
+  const prev = S.layout; S.layout = l; commit();
+  const scene = CFG.scenes && CFG.scenes[l];
+  const prevScene = CFG.scenes && CFG.scenes[prev];
+  if (scene && scene !== prevScene) obs("SetCurrentProgramScene", {sceneName: scene});
+  const pf = CFG.privacyFilter;
+  if (pf && pf.source && pf.filter) obs("SetSourceFilterEnabled", {sourceName: pf.source, filterName: pf.filter, filterEnabled: l === "private"}, true);
+  log({full:"Cam Vollbild", pip:"Screen + Cam", private:"Milchglas an"}[l]);
+}
+$("layouts").addEventListener("click", e => { const b = e.target.closest("button[data-l]"); if (b) setLayout(b.dataset.l); });
+$("cleanBtn").onclick = () => { S.clean = !S.clean; commit(); };
+$("clearFx").onclick = () => link.send("clearfx", {});
+
+/* ---------- Aufnahme ---------- */
+function setRec(on, durMs){
+  if (on){ S.rec = {running:true, start: Date.now() - (durMs||0), elapsed:0}; }
+  else if (S.rec.running){ S.rec = {running:false, start:0, elapsed: Date.now() - S.rec.start}; }
+  commit();
+}
+$("recBtn").onclick = async () => {
+  if (link.obsState === "verbunden"){
+    const r = await obs(S.rec.running ? "StopRecord" : "StartRecord");
+    if (r === null) log("OBS hat die Aufnahme nicht gestartet/gestoppt.", "err");
+  } else { setRec(!S.rec.running); log("Kein OBS: nur die Uhr läuft. Aufnahme in OBS selbst starten.", "err"); }
+};
+setInterval(() => {
+  const ms = S.rec.running ? Date.now() - S.rec.start : (S.rec.elapsed||0), s = Math.floor(ms/1000);
+  $("recClock").textContent = [s/3600|0,(s/60|0)%60,s%60].map(v => String(v).padStart(2,"0")).join(":");
+}, 250);
+
+/* ---------- Monitor & Zeichnen ---------- */
+let tool = "arrow", color = "red", armedStamp = K.stamps[0].id, draft = null;
+const cv = $("cv"), ctx = cv.getContext("2d");
+function sizeCanvas(){ const r = cv.getBoundingClientRect(), d = devicePixelRatio||1; cv.width = r.width*d; cv.height = r.height*d; ctx.setTransform(d,0,0,d,0,0); drawDraft(); }
+new ResizeObserver(sizeCanvas).observe(cv);
+function norm(e){ const r = cv.getBoundingClientRect(); return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)), Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]; }
+const CC = {red:"#ff2b3a", amber:"#ffc21a", mint:"#22e39b", white:"#ffffff"};
+function drawDraft(){
+  const r = cv.getBoundingClientRect(); ctx.clearRect(0,0,r.width,r.height);
+  if (!draft) return;
+  const pts = draft.pts.map(p => [p[0]*r.width, p[1]*r.height]);
+  ctx.strokeStyle = draft.type === "censor" ? "#ff2b3a" : CC[color]; ctx.lineWidth = 3; ctx.setLineDash(draft.type === "pen" ? [] : [6,4]);
+  if (draft.type === "pen"){ ctx.beginPath(); pts.forEach((p,i) => i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.lineWidth = 6; ctx.globalAlpha = .6; ctx.stroke(); ctx.globalAlpha = 1; return; }
+  if (pts.length < 2) return;
+  const [a,b] = pts;
+  ctx.beginPath();
+  if (draft.type === "arrow"){ ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); }
+  else if (draft.type === "circle" || draft.type === "spot"){ ctx.ellipse((a[0]+b[0])/2,(a[1]+b[1])/2,Math.abs(b[0]-a[0])/2,Math.abs(b[1]-a[1])/2,0,0,Math.PI*2); }
+  else { ctx.rect(Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1])); if (draft.type === "censor"){ ctx.fillStyle = "rgba(10,14,23,.7)"; ctx.fill(); } }
+  ctx.stroke();
+}
+cv.addEventListener("pointerdown", e => {
+  if (S.layout !== "pip") log("Hinweis: Zeichnungen sind nur im Layout „Screen + Cam“ zu sehen.");
+  const p = norm(e);
+  if (tool === "stamp"){ placeStamp(armedStamp, p[0], p[1], false); return; }
+  draft = {type:tool, pts:[p, p]}; if (tool === "pen") draft.pts = [p];
+  cv.setPointerCapture(e.pointerId); drawDraft();
+});
+cv.addEventListener("pointermove", e => {
+  if (!draft) return; const p = norm(e);
+  if (draft.type === "pen"){ const l = draft.pts[draft.pts.length-1]; if (Math.hypot(p[0]-l[0], p[1]-l[1]) > .004) draft.pts.push(p); }
+  else draft.pts[1] = p;
+  drawDraft();
+});
+cv.addEventListener("pointerup", () => {
+  if (!draft) return; const d = draft; draft = null; drawDraft();
+  const big = d.type === "pen" ? d.pts.length > 2 : Math.hypot(d.pts[1][0]-d.pts[0][0], d.pts[1][1]-d.pts[0][1]) > .015;
+  if (!big) return;
+  const shape = {id: rid(), type: d.type, color, pts: d.pts.map(p => [+p[0].toFixed(4), +p[1].toFixed(4)])};
+  if (d.type === "spot") S.draw = S.draw.filter(s => s.type !== "spot");
+  S.draw.push(shape); S.hist.push({k:"draw", id:shape.id});
+  if (d.type === "spot") link.send("sound", {name:"whoosh"});
+  commit();
+});
+$("tools").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (b){ tool = b.dataset.t; paintTools(); } });
+document.querySelectorAll(".swatch").forEach(b => b.onclick = () => { color = b.dataset.c; paintTools(); });
+function paintTools(){
+  document.querySelectorAll("#tools button").forEach(b => b.classList.toggle("on", b.dataset.t === tool));
+  document.querySelectorAll(".swatch").forEach(b => b.classList.toggle("on", b.dataset.c === color));
+  document.querySelectorAll(".stampbtn").forEach(b => b.classList.toggle("armed", tool === "stamp" && b.dataset.s === armedStamp));
+}
+function undo(){
+  const h = S.hist.pop(); if (!h) return;
+  if (h.k === "draw") S.draw = S.draw.filter(s => s.id !== h.id);
+  if (h.k === "stamp") S.stamps = S.stamps.filter(s => s.id !== h.id);
+  commit();
+}
+function clearDraw(){ S.draw = []; S.stamps = []; S.hist = []; commit(); }
+$("undo").onclick = undo; $("clearDraw").onclick = clearDraw;
+
+$("shareBtn").onclick = async () => {
+  try {
+    const st = await navigator.mediaDevices.getDisplayMedia({video:{frameRate:15}, audio:false});
+    $("vid").srcObject = st; $("monEmpty").hidden = true; $("shareBtn").textContent = "Anderen Bildschirm wählen";
+    st.getVideoTracks()[0].addEventListener("ended", () => { $("monEmpty").hidden = false; $("shareBtn").textContent = "Linken Monitor teilen"; });
+    log("Bildschirm geteilt. Das Bild dient nur dir als Zeichenvorlage, es geht nicht an OBS.", "ok");
+  } catch(e){ log("Bildschirm teilen abgebrochen oder nicht erlaubt (Seite über file:// oder localhost öffnen).", "err"); }
+};
+
+/* ---------- Stempel & Urteil ---------- */
+$("stampgrid").innerHTML = K.stamps.map(s => '<button class="stampbtn t-'+s.tone+'" data-s="'+s.id+'">'+esc(s.label)+'<small>'+esc(s.sub)+'</small></button>').join("");
+$("stampgrid").addEventListener("click", e => {
+  const b = e.target.closest(".stampbtn"); if (!b) return;
+  if (tool === "stamp"){ armedStamp = b.dataset.s; paintTools(); log("Stempel „" + b.textContent.trim() + "“ bereit: auf den Monitor klicken."); return; }
+  placeStamp(b.dataset.s, .42, .52, true);
+});
+function placeStamp(id, x, y, big){
+  const k = K.stamps.find(s => s.id === id); if (!k) return;
+  const st = {id: rid(), label:k.label, sub:k.sub, tone:k.tone, x:+x.toFixed(4), y:+y.toFixed(4), rot: Math.round(-12 + Math.random()*10), big:!!big};
+  S.stamps.push(st); S.hist.push({k:"stamp", id:st.id});
+  if (k.verdict) setVerdict(k.verdict, true);
+  if (k.tone === "red") link.send("flash", {tone:"red"});
+  commit();
+}
+function setVerdict(v, fromStamp){
+  const old = S.case.verdict;
+  if (old === v && !fromStamp){ return; }
+  if (old && S.tally[old] > 0) S.tally[old]--;
+  S.tally[v] = (S.tally[v]||0) + 1; S.case.verdict = v;
+  if (!fromStamp){ const k = K.stamps.find(s => s.verdict === v); placeStamp(k.id, .42, .52, true); return; }
+}
+document.querySelector(".verdicts").addEventListener("click", e => { const b = e.target.closest("button[data-v]"); if (b) setVerdict(b.dataset.v); });
+
+/* ---------- Fallakte ---------- */
+const FMAP = {fItem:"item", fPrice:"price", fMarket:"market", fSeller:"seller", fSince:"since"};
+Object.keys(FMAP).forEach(id => $(id).addEventListener("input", e => { S.case[FMAP[id]] = e.target.value; commit(); }));
+$("fOn").onchange = e => { S.case.on = e.target.checked; commit(); };
+$("fMeter").onchange = e => { S.meter = e.target.checked; commit(); };
+$("newCase").onclick = newCase;
+function newCase(){
+  S.case = {no:(S.case.no||0)+1, item:"", price:"", market:"", seller:"", since:"", on:S.case.on, verdict:null};
+  S.checks = {}; S.checkOrder = []; S.draw = []; S.stamps = []; S.hist = [];
+  commit(); fillInputs();
+  link.send("fx", {kind:"toast", tone:"amber", title:"Neuer Fall #" + String(S.case.no).padStart(2,"0"), text:"Nächste Anzeige unter die Lupe.", sound:"whoosh"});
+  log("Fall #" + S.case.no + " angelegt.");
+}
+function paintTally(){
+  $("tallyrow").innerHTML = [["scam","SCAM","t-red"],["sus","VERDACHT","t-amber"],["legit","SAUBER","t-mint"]].map(([k,l,c]) =>
+    '<div class="t '+c+'">'+l+' <b>'+(S.tally[k]||0)+'</b><button data-k="'+k+'" data-d="-1" aria-label="'+l+' minus">−</button><button data-k="'+k+'" data-d="1" aria-label="'+l+' plus">+</button></div>').join("") +
+    '<span class="hint">Strichliste fürs ganze Video</span>';
+}
+$("tallyrow").addEventListener("click", e => { const b = e.target.closest("button[data-k]"); if (!b) return; S.tally[b.dataset.k] = Math.max(0, (S.tally[b.dataset.k]||0) + (+b.dataset.d)); commit(); });
+
+/* ---------- Roter Faden ---------- */
+function buildChecks(){
+  let h = "", g = "";
+  K.checks.forEach((c, i) => {
+    if (c.group !== g){ g = c.group; h += '<div class="cgroup">' + esc(g) + '</div>'; }
+    h += '<div class="check" data-id="'+c.id+'"><div><div class="lbl" title="Frage einblenden">'+esc(c.label)+'<em>'+'●'.repeat(c.w)+'</em></div><div class="q">'+esc(c.q)+'</div></div>'+
+      '<div class="seg"><button class="ok" data-s="1" aria-label="passt">✓</button><button class="bad" data-s="2" aria-label="Warnsignal">!</button></div></div>';
+  });
+  $("checks").innerHTML = h;
+}
+$("checks").addEventListener("click", e => {
+  const row = e.target.closest(".check"); if (!row) return;
+  const c = K.checks.find(x => x.id === row.dataset.id), idx = K.checks.indexOf(c) + 1;
+  const b = e.target.closest("button[data-s]");
+  if (!b){
+    link.send("checkpop", {tone:"steel", eyebrow:"Check "+idx+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q, seconds:9});
+    link.send("sound", {name:"whoosh"}); return;
+  }
+  const s = +b.dataset.s, cur = S.checks[c.id] || 0, next = cur === s ? 0 : s;
+  S.checks[c.id] = next;
+  S.checkOrder = S.checkOrder.filter(x => x !== c.id); if (next) S.checkOrder.push(c.id);
+  commit();
+  if (next && S.autoPop){
+    link.send("checkpop", {tone: next === 2 ? "red" : "mint", eyebrow:"Check "+idx+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q,
+      badge: next === 2 ? "Warnsignal · " + c.flag : "Passt", seconds:7});
+    link.send("sound", {name: next === 2 ? "buzzer" : "ding"});
+  }
+});
+$("autoPop").onchange = e => { S.autoPop = e.target.checked; commit(); };
+
+/* ---------- Einblendungen ---------- */
+const groups = [...new Set(K.inserts.map(i => i.group))];
+let insGroup = groups[0];
+function paintIns(){
+  $("insTabs").innerHTML = groups.map(g => '<button class="'+(g===insGroup?"on":"")+'" data-g="'+esc(g)+'">'+esc(g)+'</button>').join("");
+  $("ins").innerHTML = K.inserts.map((x,i) => x.group !== insGroup ? "" :
+    '<button class="t-'+x.tone+'" data-i="'+i+'"><span class="k">'+({alert:"Alarm",lower:"Bauchbinde",toast:"Hinweis",poll:"Frage"}[x.kind])+'</span>'+esc(x.title)+'<span>'+esc(x.text)+'</span></button>').join("");
+}
+$("insTabs").addEventListener("click", e => { const b = e.target.closest("button[data-g]"); if (b){ insGroup = b.dataset.g; paintIns(); } });
+$("ins").addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (!b) return; const x = K.inserts[+b.dataset.i]; link.send("fx", x); log("Eingeblendet: " + x.title); });
+$("cSend").onclick = () => {
+  const d = {kind:$("cKind").value, tone:$("cTone").value, title:$("cTitle").value || "Achtung", text:$("cText").value, sound:$("cSound").value};
+  link.send("fx", d); log("Eingeblendet: " + d.title);
+};
+
+/* ---------- Mini-Piet ---------- */
+let pose = "detektiv", custom = null, pietOn = false;
+const customs = (CFG.miniPiets || []);
+function paintPoses(){
+  const builtin = Object.keys(MiniPiet.POSES).map(k => '<button data-p="'+k+'" class="'+(!custom && pose===k?"on":"")+'" title="'+MiniPiet.POSES[k].label+'">'+MiniPiet.svg(k)+'</button>');
+  const own = customs.map((c,i) => '<button data-c="'+i+'" class="'+(custom===i?"on":"")+'" title="'+esc(c.name)+'"><img alt="'+esc(c.name)+'" src="'+esc(c.src)+'"></button>');
+  $("poses").innerHTML = builtin.concat(own).join("");
+}
+$("poses").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.c != null){ custom = +b.dataset.c; } else { custom = null; pose = b.dataset.p; }
+  paintPoses(); showPiet();
+});
+function showPiet(text){
+  const d = {pose, text: text != null ? text : $("pText").value, seconds: 7};
+  if (custom != null) d.src = customs[custom].src;
+  link.send("piet", d); pietOn = true;
+}
+$("pShow").onclick = () => showPiet();
+$("pHide").onclick = () => { link.send("hidepiet", {}); pietOn = false; };
+$("pLines").innerHTML = K.pietLines.map((l,i) => '<button data-l="'+i+'">„'+esc(l.text)+'“</button>').join("");
+$("pLines").addEventListener("click", e => { const b = e.target.closest("button[data-l]"); if (!b) return; const l = K.pietLines[+b.dataset.l]; pose = l.pose; custom = null; $("pText").value = l.text; paintPoses(); showPiet(l.text); });
+
+/* ---------- Ton ---------- */
+const SND = [["alarm","Alarm"],["bling","Bling"],["ding","Ding"],["stamp","Stempel"],["whoosh","Wusch"],["buzzer","Falsch"],["reveal","Auflösung"],["tick","Tick"]];
+$("sounds").innerHTML = SND.map(([k,l]) => '<button data-snd="'+k+'">'+l+'</button>').join("");
+$("sounds").addEventListener("click", e => { const b = e.target.closest("button[data-snd]"); if (b) link.send("sound", {name:b.dataset.snd}); });
+$("vol").oninput = e => { S.volume = +e.target.value; commit(); };
+
+/* ---------- Ablauf & Leisten ---------- */
+function phaseStep(d){
+  const i = Math.max(0, K.phases.findIndex(p => p.id === S.status.phase)), n = Math.min(K.phases.length-1, Math.max(0, i+d));
+  S.status.phase = K.phases[n].id; commit();
+  link.send("fx", {kind:"toast", tone:"amber", title:"Phase " + (n+1) + ": " + K.phases[n].label, text:"", sound:"whoosh", seconds:4});
+}
+$("phPrev").onclick = () => phaseStep(-1); $("phNext").onclick = () => phaseStep(1);
+const bind = (id, get, set, ev) => $(id).addEventListener(ev || "input", e => { set(e.target.type === "checkbox" ? e.target.checked : e.target.value); commit(); });
+bind("bOn", 0, v => S.banner.on = v, "change");
+bind("bItems", 0, v => S.banner.items = v.split("\n").map(s => s.trim()).filter(Boolean));
+bind("bSpeed", 0, v => S.banner.speed = +v);
+bind("sOn", 0, v => S.status.on = v, "change");
+bind("sLive", 0, v => S.status.liveText = v);
+bind("hName", 0, v => S.host.name = v);
+bind("hRole", 0, v => S.host.role = v);
+bind("hKick", 0, v => S.hostKicker = v);
+bind("camTag", 0, v => S.camTag = v);
+bind("hOn", 0, v => S.hostTitle = v, "change");
+bind("mTitle", 0, v => S.privacy.title = v);
+bind("mText", 0, v => S.privacy.text = v);
+bind("mOp", 0, v => S.privacy.opacity = +v);
+
+$("oSave").onclick = () => {
+  const o = {host:$("oHost").value.trim() || "127.0.0.1", port:+$("oPort").value || 4455, password:$("oPw").value};
+  store.set("piet-obs", o); link.reconfigure(o); log("Verbinde mit OBS …");
+};
+$("ovReload").onclick = () => { link.send("reload", {}); log("Overlay wird neu geladen."); };
+let resetArm = 0;
+$("resetAll").onclick = () => {
+  if (Date.now() - resetArm > 3000){ resetArm = Date.now(); $("resetAll").textContent = "Wirklich? Nochmal klicken"; setTimeout(() => $("resetAll").textContent = "Alles zurücksetzen", 3000); return; }
+  S = DEF(); fillInputs(); commit(); log("Alles zurückgesetzt.");
+};
+
+/* ---------- Anzeige im Pult ---------- */
+function fillInputs(){
+  Object.keys(FMAP).forEach(id => $(id).value = S.case[FMAP[id]] || "");
+  $("fOn").checked = S.case.on !== false; $("fMeter").checked = S.meter !== false; $("autoPop").checked = S.autoPop !== false;
+  $("bOn").checked = S.banner.on; $("bItems").value = S.banner.items.join("\n"); $("bSpeed").value = S.banner.speed;
+  $("sOn").checked = S.status.on; $("sLive").value = S.status.liveText;
+  $("hName").value = S.host.name; $("hRole").value = S.host.role; $("hKick").value = S.hostKicker; $("camTag").value = S.camTag; $("hOn").checked = S.hostTitle !== false;
+  $("mTitle").value = S.privacy.title; $("mText").value = S.privacy.text; $("mOp").value = S.privacy.opacity;
+  $("vol").value = S.volume;
+  $("oHost").value = obsCfg.host; $("oPort").value = obsCfg.port; $("oPw").value = obsCfg.password || "";
+}
+function paint(){
+  document.querySelectorAll("#layouts button[data-l]").forEach(b => b.classList.toggle("on", b.dataset.l === S.layout));
+  $("cleanBtn").classList.toggle("on", !!S.clean);
+  $("recBtn").classList.toggle("on", S.rec.running);
+  $("recBtn").querySelector("span").textContent = S.rec.running ? "Aufnahme stoppen" : "Aufnahme starten";
+  $("caseNoLbl").textContent = "Fall #" + String(S.case.no).padStart(2,"0");
+  const r = risk();
+  $("riskPct").textContent = r.pct + "%"; $("riskMark").style.left = r.pct + "%"; $("riskLbl").textContent = r.label;
+  $("riskLbl").style.color = "var(--" + ({red:"alarm",amber:"tape",mint:"clean",steel:"mu"}[r.tone]) + ")";
+  document.querySelectorAll(".verdicts button").forEach(b => b.classList.toggle("on", b.dataset.v === S.case.verdict));
+  paintTally();
+  let n = 0;
+  document.querySelectorAll(".check").forEach(row => {
+    const v = S.checks[row.dataset.id] || 0; if (v) n++;
+    row.className = "check s" + v;
+    row.querySelector(".ok").classList.toggle("on", v === 1); row.querySelector(".bad").classList.toggle("on", v === 2);
+  });
+  $("chkProg").textContent = n + " / " + K.checks.length + " geprüft";
+  const i = Math.max(0, K.phases.findIndex(p => p.id === S.status.phase));
+  $("phName").textContent = (i+1) + " · " + K.phases[i].label; $("phHint").textContent = K.phases[i].hint;
+  $("volLbl").textContent = Math.round(S.volume*100) + " %";
+  $("mOpLbl").textContent = Math.round(S.privacy.opacity*100) + " %";
+}
+
+/* ---------- Tastatur ---------- */
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input,textarea,select") || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase(), T = {a:"arrow",k:"circle",r:"box",m:"marker",z:"censor",l:"spot",t:"stamp"};
+  if (k === "1") setLayout("full"); else if (k === "2") setLayout("pip"); else if (k === "3") setLayout("private");
+  else if (k === "0"){ S.clean = !S.clean; commit(); }
+  else if (k === "s") setVerdict("scam"); else if (k === "v") setVerdict("sus"); else if (k === "g") setVerdict("legit");
+  else if (k === "n") newCase();
+  else if (k === "arrowright") phaseStep(1); else if (k === "arrowleft") phaseStep(-1);
+  else if (k === "escape") link.send("clearfx", {});
+  else if (k === "backspace"){ e.preventDefault(); undo(); }
+  else if (k === "delete") clearDraw();
+  else if (k === "p"){ if (pietOn){ link.send("hidepiet", {}); pietOn = false; } else showPiet(); }
+  else if (T[k]){ tool = k === "m" ? "pen" : T[k]; paintTools(); }
+  else return;
+  e.preventDefault();
+});
+
+buildChecks(); paintIns(); paintPoses(); paintTools(); fillInputs(); paint();
+link.send("state", out());
+})();
+</script>
+</body>
+</html>
