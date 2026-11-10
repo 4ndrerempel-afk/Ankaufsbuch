@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Piet van Dijk · Scam-Detektiv HUD — Einstellungen
+   Pete van Dijk · Scam-Detektiv HUD — Einstellungen
    Diese Datei liegt neben overlay.html und regie.html. Beide lesen sie ein.
    Nach einer Änderung: in OBS die Browserquelle "Cache leeren & neu laden".
    ========================================================================== */
@@ -13,9 +13,9 @@ window.PIET_CONFIG = {
 
   /* Namen deiner OBS-Szenen. Leer lassen = Pult wechselt die Szene nicht. */
   scenes: {
-    full:    "PIET · Cam Vollbild",
-    pip:     "PIET · Screen + Cam",
-    private: "PIET · Screen + Cam"     // gleiche Szene, Milchglas kommt per Filter + Overlay
+    full:    "SCAM · Cam Vollbild",
+    pip:     "SCAM · Screen + Cam",
+    private: "SCAM · Screen + Cam"     // gleiche Szene, Milchglas kommt per Filter + Overlay
   },
 
   /* Milchglas: Filter auf deiner Bildschirmaufnahme, der im Privatmodus an geht */
@@ -28,14 +28,16 @@ window.PIET_CONFIG = {
      Muss zu der Kamera-Position in OBS passen, damit der Rahmen sitzt. */
   camPip: { x: 1452, y: 776, w: 432, h: 243 },
 
-  /* Eigene Mini-Piet-Bilder (PNG/GIF/WebP mit transparentem Hintergrund).
-     Dateien in den Ordner minipiets/ legen und hier eintragen.
-     Ohne Einträge nimmt das HUD den eingebauten gezeichneten Mini-Piet. */
-  miniPiets: [
-    // { name: "Schock",    src: "minipiets/schock.png" },
-    // { name: "Daumen",    src: "minipiets/daumen.png" },
-  ],
+  /* Aussehen der Mini-Petes. Logo: PNG/SVG mit transparentem Hintergrund
+     in den Ordner minipiets/ legen und hier eintragen, z. B. "minipiets/logo.png".
+     Ohne Logo steht ein Monogramm (initials) auf dem Hoodie. */
+  miniPiet: {
+    logo: "",
+    initials: "PvD",
+    logoColor: "#c8102e",
+    hair: "#5a3820", hairLight: "#7a4e2d", hairDark: "#2e1c10"
+  },
 
   /* Stimme & Look */
-  host: { name: "Piet van Dijk", role: "Scam-Detektiv · Kleinanzeigen live geprüft" }
+  host: { name: "Pete van Dijk", role: "Betrugsermittlung auf Kleinanzeigen · live" }
 };

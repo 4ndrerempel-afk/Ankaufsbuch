@@ -5,28 +5,28 @@
 <title>Scam-Detektiv Regie</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
-/* Layout: Kopfleiste mit Layout/REC → drei Spalten: Monitor+Werkzeuge | Fall+roter Faden | Einblendungen+Piet+Einstellungen */
+/* Layout: Kopfleiste mit Layout/REC → drei Spalten: Monitor+Werkzeuge | Fall+roter Faden | Einblendungen+Mini-Petes+Einstellungen */
 :root{
-  --bg:#0a0d14; --s1:#111723; --s2:#172031; --s3:#1f2a3f; --line:#26324a; --tx:#e8eef8; --mu:#8c9bb4;
-  --alarm:#ff2b3a; --tape:#ffc21a; --clean:#22e39b; --steel:#9fb2cc; --ink:#0a0e17;
-  --f-display:"Anton","Impact","Arial Narrow Bold",sans-serif;
-  --f-ui:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
-  --f-body:"Barlow","Segoe UI","Helvetica Neue",Arial,sans-serif;
-  --f-mono:"JetBrains Mono","Consolas","Menlo",monospace;
+  --bg:#07090c; --s1:#0e1217; --s2:#151a21; --s3:#1d242d; --line:#232b35; --tx:#e6eaee; --mu:#8592a0;
+  --alarm:#e0243f; --tape:#d6a03a; --clean:#3fb48a; --steel:#8fb4c8; --ink:#05070a;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",sans-serif;
+  --f-ui:"IBM Plex Sans Condensed","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono","Consolas","Menlo",monospace;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--tx);font:500 14px/1.35 var(--f-body);display:flex;flex-direction:column;min-height:100%}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:1px solid var(--line);background:var(--s2);border-radius:6px;padding:7px 10px;font:700 15px/1.1 var(--f-ui);letter-spacing:.05em;transition:background .15s,border-color .15s,transform .08s}
+button{cursor:pointer;border:1px solid var(--line);background:var(--s2);border-radius:3px;padding:7px 10px;font:700 15px/1.1 var(--f-ui);letter-spacing:.05em;transition:background .15s,border-color .15s,transform .08s}
 button:hover{background:var(--s3);border-color:#3a4a69}
 button:active{transform:translateY(1px)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--tape);outline-offset:2px}
 button.on{background:var(--tape);color:var(--ink);border-color:var(--tape)}
-input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 9px;width:100%;min-width:0}
 textarea{resize:vertical;font:500 13px/1.4 var(--f-body)}
 label{display:grid;gap:4px;font:700 12px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mu)}
 kbd{font:700 10px/1 var(--f-mono);padding:2px 4px;border-radius:3px;background:rgba(255,255,255,.08);color:var(--mu);margin-left:6px;vertical-align:1px}
@@ -35,8 +35,8 @@ button.on kbd{background:rgba(0,0,0,.15);color:var(--ink)}
 /* Kopf */
 header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--s1);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
 .brand{display:flex;align-items:center;gap:10px}
-.brand .badge{width:38px;height:38px;border-radius:50%;background:var(--alarm);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,43,58,.25)}
-.brand h1{margin:0;font:400 24px/1 var(--f-display);letter-spacing:.06em}
+.brand .badge{width:36px;height:36px;border-radius:50%;background:var(--alarm);display:grid;place-items:center}
+.brand h1{margin:0;font:700 22px/1 var(--f-display);letter-spacing:.08em}
 .brand small{display:block;font:700 11px/1 var(--f-mono);letter-spacing:.18em;color:var(--mu);margin-top:3px}
 .pill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font:700 13px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .pill i{width:9px;height:9px;border-radius:50%;background:var(--mu)}
@@ -56,8 +56,8 @@ main{flex:1;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) mi
 @media (max-width:1500px){main{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)} .col3{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start}}
 @media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
 .col{display:flex;flex-direction:column;gap:12px;min-width:0}
-section{background:var(--s1);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
-section > h2{margin:0 0 10px;display:flex;align-items:center;gap:8px;font:400 19px/1 var(--f-display);letter-spacing:.07em;text-transform:uppercase}
+section{background:var(--s1);border:1px solid var(--line);border-radius:4px;padding:12px;min-width:0}
+section > h2{margin:0 0 10px;display:flex;align-items:center;gap:8px;font:700 17px/1 var(--f-display);letter-spacing:.12em;text-transform:uppercase}
 section > h2 .sub{margin-left:auto;font:700 12px/1 var(--f-mono);letter-spacing:.08em;color:var(--mu);text-transform:none}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -65,7 +65,7 @@ section > h2 .sub{margin-left:auto;font:700 12px/1 var(--f-mono);letter-spacing:
 .hint{color:var(--mu);font-size:12.5px}
 
 /* Monitor */
-.monitor{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:8px;overflow:hidden;background:#05070c;border:1px solid var(--line)}
+.monitor{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:4px;overflow:hidden;background:#05070c;border:1px solid var(--line)}
 .monitor video,.monitor iframe,.monitor canvas{position:absolute;inset:0;width:100%;height:100%;border:0}
 .monitor video{object-fit:fill}
 .monitor iframe{pointer-events:none;background:transparent}
@@ -79,23 +79,23 @@ section > h2 .sub{margin-left:auto;font:700 12px/1 var(--f-mono);letter-spacing:
 .swatch{width:30px;height:30px;padding:0;border-radius:50%;border:3px solid transparent}
 .swatch.on{border-color:#fff;background:inherit}
 .stampgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
-.stampbtn{font:400 18px/1 var(--f-display);letter-spacing:.06em;padding:10px 6px;border:2px solid var(--tone);color:var(--tone);background:color-mix(in srgb,var(--tone) 8%,transparent)}
+.stampbtn{font:700 16px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;padding:10px 6px;border:2px solid var(--tone);color:var(--tone);background:color-mix(in srgb,var(--tone) 8%,transparent)}
 .stampbtn small{display:block;font:700 10px/1 var(--f-mono);letter-spacing:.12em;margin-top:4px;opacity:.8}
 .stampbtn:hover{background:color-mix(in srgb,var(--tone) 18%,transparent)}
 .stampbtn.armed{background:var(--tone);color:var(--ink)}
-.t-red{--tone:var(--alarm)} .t-amber{--tone:var(--tape)} .t-mint{--tone:var(--clean)} .t-steel{--tone:var(--steel)}
+.t-red{--tone:var(--alarm)} .t-amber{--tone:var(--tape)} .t-mint,.t-green{--tone:var(--clean)} .t-steel,.t-cyan{--tone:var(--steel)}
 
 /* Fall */
 .verdicts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.verdicts button{font:400 22px/1 var(--f-display);letter-spacing:.06em;padding:12px 6px;border:2px solid var(--tone);color:var(--tone);background:transparent}
+.verdicts button{font:700 18px/1 var(--f-display);letter-spacing:.06em;padding:12px 6px;border:2px solid var(--tone);color:var(--tone);background:transparent}
 .verdicts button.on{background:var(--tone);color:var(--ink)}
-.risk{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
-.risk .bar{flex:1;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--clean),var(--tape) 45%,var(--alarm));position:relative}
+.risk{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px;border-radius:4px;background:var(--bg);border:1px solid var(--line)}
+.risk .bar{flex:1;height:12px;border-radius:3px;background:linear-gradient(90deg,var(--clean),var(--tape) 45%,var(--alarm));position:relative}
 .risk .bar i{position:absolute;top:-5px;width:4px;height:22px;background:#fff;border-radius:2px;transform:translateX(-2px);transition:left .5s}
 .risk b{font:700 22px/1 var(--f-mono);min-width:58px;text-align:right}
 .risk span{font:700 14px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;min-width:110px}
 .tallyrow{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
-.tallyrow .t{display:flex;align-items:center;gap:4px;padding:4px 6px 4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--line);font:700 13px/1 var(--f-ui);letter-spacing:.08em}
+.tallyrow .t{display:flex;align-items:center;gap:4px;padding:4px 6px 4px 10px;border-radius:3px;background:var(--bg);border:1px solid var(--line);font:700 13px/1 var(--f-ui);letter-spacing:.08em}
 .tallyrow .t b{font:700 16px/1 var(--f-mono);color:var(--tone);min-width:20px;text-align:center}
 .tallyrow .t button{padding:2px 7px;font-size:13px}
 
@@ -121,11 +121,15 @@ section > h2 .sub{margin-left:auto;font:700 12px/1 var(--f-mono);letter-spacing:
 .tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
 .tabs button{padding:5px 10px;font-size:13px}
 
-/* Mini-Piet */
-.poses{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
-.poses button{padding:3px;aspect-ratio:5/6;display:grid;place-items:center;background:var(--bg)}
-.poses button svg,.poses button img{width:100%;height:100%;object-fit:contain}
-.poses button.on{background:var(--s3);border-color:var(--tape)}
+/* Mini-Petes */
+.crewhead{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.crewhead .fig{width:64px;height:120px;background:linear-gradient(#1a2029,#0b0e12);border:1px solid var(--line);display:grid;place-items:end center;padding:4px 0 2px;overflow:hidden}
+.crewhead .fig svg{width:56px;height:112px}
+.gags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:10px}
+.gags button{font-size:13px;padding:7px 6px}
+#nextGag{font:600 13px/1 var(--f-mono);color:var(--steel)}
+.crewhead .fig :is(.mp-lens,.mp-cup,.mp-phone,.mp-pen,.mp-pad,.mp-thumb,.mp-torch){display:none}
+.monitor .empty > div{opacity:.38}
 .lines{display:grid;gap:4px;margin-top:8px}
 .lines button{text-align:left;font:600 13px/1.2 var(--f-body);letter-spacing:0;padding:6px 9px}
 
@@ -150,7 +154,7 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
 <header>
   <div class="brand">
     <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg></div>
-    <div><h1>SCAM-DETEKTIV · REGIE</h1><small>PIET VAN DIJK · ONE-CUT-PULT</small></div>
+    <div><h1>SCAM-DETEKTIV · REGIE</h1><small>EINE AUFNAHME · KEIN SCHNITT</small></div>
   </div>
   <span class="pill" id="pObs"><i></i><span>OBS</span></span>
   <span class="pill" id="pOv"><i></i><span>Overlay</span></span>
@@ -196,7 +200,7 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
         <button id="shareBtn">Linken Monitor teilen</button>
       </div>
       <div class="stampgrid" id="stampgrid"></div>
-      <p class="hint" style="margin:8px 0 0">Stempel-Knopf = Stempel groß in die Mitte. Werkzeug „Stempel“ + Klick auf den Monitor = Stempel genau dort. SCAM, VERDÄCHTIG und SAUBER zählen als Urteil in die Strichliste.</p>
+      <p class="hint" style="margin:8px 0 0">Stempel-Knopf = Stempel groß in die Mitte. Werkzeug „Stempel“ + Klick auf den Monitor = Stempel genau dort. Betrugsverdacht, Fraglich und Unauffällig zählen als Befund in die Bilanz.</p>
     </section>
   </div>
 
@@ -213,15 +217,15 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
       </div>
       <div class="row" style="margin-top:8px">
         <label class="switch"><input type="checkbox" id="fOn" checked>Fallakte zeigen</label>
-        <label class="switch"><input type="checkbox" id="fMeter" checked>Scam-o-Meter</label>
+        <label class="switch"><input type="checkbox" id="fMeter" checked>Verdachtsgrad</label>
         <div class="grow"></div>
-        <button id="newCase" class="t-amber" style="border-color:var(--tape)">Neuer Fall<kbd>N</kbd></button>
+        <button id="capBtn" title="Fall, Ort und Uhrzeit als Schreibmaschinen-Zeile einblenden">Akte einblenden<kbd>I</kbd></button><button id="newCase" class="t-amber" style="border-color:var(--tape)">Neuer Fall<kbd>N</kbd></button>
       </div>
-      <div class="risk"><span id="riskLbl">Noch nichts geprüft</span><div class="bar"><i id="riskMark" style="left:0"></i></div><b id="riskPct">0%</b></div>
+      <div class="risk"><span id="riskLbl">Ohne Befund</span><div class="bar"><i id="riskMark" style="left:0"></i></div><b id="riskPct">0%</b></div>
       <div class="verdicts">
-        <button class="t-red" data-v="scam">SCAM<kbd>S</kbd></button>
-        <button class="t-amber" data-v="sus">VERDÄCHTIG<kbd>V</kbd></button>
-        <button class="t-mint" data-v="legit">SAUBER<kbd>G</kbd></button>
+        <button class="t-red" data-v="scam">VERDACHT<kbd>S</kbd></button>
+        <button class="t-amber" data-v="sus">FRAGLICH<kbd>V</kbd></button>
+        <button class="t-green" data-v="legit">UNAUFFÄLLIG<kbd>G</kbd></button>
       </div>
       <div class="tallyrow" id="tallyrow"></div>
     </section>
@@ -231,11 +235,11 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
         <label class="switch"><input type="checkbox" id="autoPop" checked>Bewertung automatisch einblenden</label>
       </div>
       <div class="checks" id="checks"></div>
-      <p class="hint" style="margin:8px 0 0">Klick auf den Namen = Frage einblenden („Jetzt prüfe ich …“). ✓ = passt, ! = Warnsignal. Das Scam-o-Meter rechnet die Warnsignale nach Gewicht zusammen.</p>
+      <p class="hint" style="margin:8px 0 0">Klick auf den Namen = Frage einblenden („Jetzt prüfe ich …“). ✓ = passt, ! = Warnsignal. Der Verdachtsgrad rechnet die Indizien nach Gewicht zusammen.</p>
     </section>
   </div>
 
-  <!-- Spalte 3: Einblendungen, Piet, Leisten -->
+  <!-- Spalte 3: Einblendungen, Mini-Petes, Leisten -->
   <div class="col col3">
     <section>
       <h2>Einblendungen <span class="sub">Katalog</span></h2>
@@ -257,11 +261,20 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
     </section>
 
     <section>
-      <h2>Mini-Piet <span class="sub">P = zeigen / weg</span></h2>
-      <div class="poses" id="poses"></div>
+      <h2>Mini-Petes <span class="sub" id="nextGag">—</span></h2>
+      <div class="crewhead">
+        <div class="fig" id="crewFig"></div>
+        <div style="display:grid;gap:8px">
+          <div class="row"><label class="switch"><input type="checkbox" id="crOn" checked>Auf Streife</label>
+            <label class="switch"><input type="checkbox" id="crAuto" checked>Gags automatisch</label></div>
+          <label>Anzahl <span id="crCountLbl"></span><input type="range" id="crCount" min="1" max="3" step="1"></label>
+          <label>Abstand zwischen Gags <span id="crGapLbl"></span><input type="range" id="crGap" min="30" max="240" step="10"></label>
+        </div>
+      </div>
+      <div class="gags" id="gags"></div>
       <div class="row" style="margin-top:8px;flex-wrap:nowrap">
-        <input id="pText" placeholder="Was sagt Mini-Piet?">
-        <button id="pShow">Zeigen</button><button id="pHide">Weg</button>
+        <input id="pText" placeholder="Was sagt ein Mini-Pete?">
+        <button id="pSay">Sagen<kbd>P</kbd></button>
       </div>
       <div class="lines" id="pLines"></div>
     </section>
@@ -299,6 +312,17 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
           <label class="switch"><input type="checkbox" id="hOn" checked>Namens-Titel im Vollbild</label>
         </div>
       </details>
+      <details open>
+        <summary>Atmosphäre</summary>
+        <div>
+          <label>Nebel <span id="aFogLbl"></span><input type="range" id="aFog" min="0" max="1" step="0.05"></label>
+          <div class="row">
+            <label class="switch"><input type="checkbox" id="aGrain">Filmkorn</label>
+            <label class="switch"><input type="checkbox" id="aVig">Vignette</label>
+            <label class="switch"><input type="checkbox" id="aRain">Regen</label>
+          </div>
+        </div>
+      </details>
       <details>
         <summary>Milchglas / Privatmodus</summary>
         <div>
@@ -320,7 +344,7 @@ footer{display:flex;gap:12px;align-items:center;padding:8px max(16px,env(safe-ar
   </div>
 </main>
 
-<footer><span id="log">Bereit.</span><span class="keys">1/2/3 Layout · S/V/G Urteil · A K R M Z L T Werkzeug · N neuer Fall · → Phase · P Piet · Esc weg</span></footer>
+<footer><span id="log">Bereit.</span><span class="keys">1/2/3 Layout · S/V/G Befund · A K R M Z L T Werkzeug · N neuer Fall · I Akte · → Phase · P Mini-Pete · Esc weg</span></footer>
 
 <script src="config.js"></script>
 <script src="katalog.js"></script>
@@ -338,33 +362,35 @@ const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catc
 /* ---------- Zustand ---------- */
 const DEF = () => ({
   layout:"full", clean:false, volume:.7,
-  banner:{on:true, speed:90, items:[
-    "Daumen hoch, wenn du Betrüger auch nicht leiden kannst",
-    "Abonnieren für den nächsten Live-Check",
-    "Schreib in die Kommentare: Welchen Artikel prüfe ich als nächstes?",
-    "Live · 1:1 · ohne Schnitt"]},
-  status:{on:true, phase:K.phases[0].id, liveText:"LIVE · 1:1 OHNE SCHNITT"},
-  host:{name:(CFG.host&&CFG.host.name)||"Piet van Dijk", role:(CFG.host&&CFG.host.role)||"Scam-Detektiv"},
-  hostTitle:true, hostKicker:"Live · 1:1 · ohne Schnitt", camTag:"Live · ohne Schnitt",
+  banner:{on:true, speed:80, items:[
+    "Abonniere den Kanal für den nächsten Live-Fall",
+    "Welcher Artikel als Nächstes? Schreib es in die Kommentare",
+    "Daumen hoch, wenn du Betrugsmaschen kennen willst",
+    "Eine Aufnahme · kein Schnitt"]},
+  status:{on:true, phase:K.phases[0].id, liveText:"· EINE AUFNAHME · KEIN SCHNITT"},
+  host:{name:(CFG.host&&CFG.host.name)||"Pete van Dijk", role:(CFG.host&&CFG.host.role)||"Betrugsermittlung auf Kleinanzeigen · live"},
+  hostTitle:true, hostKicker:"LIVE-ERMITTLUNG", camTag:"P. van Dijk · Ermittler",
+  atmo:{fog:.7, grain:true, vignette:true, rain:false},
+  crew:{on:true, count:2, auto:true, gap:90},
   case:{no:1,item:"",price:"",market:"",seller:"",since:"",on:true,verdict:null}, meter:true,
   tally:{scam:0,sus:0,legit:0}, checks:{}, checkOrder:[],
   rec:{running:false,start:0,elapsed:0}, draw:[], stamps:[], hist:[],
-  privacy:{title:"Privatmodus", text:"Hier ist kurz Feierabend. Das bleibt privat.", opacity:.94},
+  privacy:{title:"Privater Bereich", text:"Kurze Pause. Das bleibt privat.", opacity:.94},
   autoPop:true
 });
-let S = Object.assign(DEF(), store.get("piet-regie") || {});
+let S = Object.assign(DEF(), store.get("piet-regie-v2") || {});
 S.rec.running = false;   // nach Neuladen nie „läuft“ annehmen
 
 function risk(){
   let W = 0, flags = 0, oks = 0;
   K.checks.forEach(c => { const v = S.checks[c.id]; if (v === 2){ W += c.w; flags++; } else if (v === 1) oks++; });
   const pct = Math.min(100, Math.round(W / 10 * 100));
-  let label = "Noch nichts geprüft", tone = "steel";
+  let label = "Ohne Befund", tone = "steel";
   if (flags || oks){
-    if (pct >= 75){ label = "Alarmstufe Rot"; tone = "red"; }
-    else if (pct >= 50){ label = "Verdächtig"; tone = "amber"; }
-    else if (pct >= 25){ label = "Vorsicht"; tone = "amber"; }
-    else { label = "Unauffällig"; tone = "mint"; }
+    if (pct >= 75){ label = "Sehr hoch"; tone = "red"; }
+    else if (pct >= 50){ label = "Hoch"; tone = "red"; }
+    else if (pct >= 25){ label = "Erhöht"; tone = "amber"; }
+    else { label = "Gering"; tone = "green"; }
   }
   const list = S.checkOrder.filter(id => S.checks[id]).map(id => { const c = K.checks.find(x => x.id === id); return c && {id, s:S.checks[id], label:c.label, flag:c.flag}; }).filter(Boolean);
   return {pct, flags, oks, label, tone, list};
@@ -380,7 +406,7 @@ function out(){
 let saveT = null;
 function commit(){
   link.send("state", out());
-  clearTimeout(saveT); saveT = setTimeout(() => store.set("piet-regie", S), 250);
+  clearTimeout(saveT); saveT = setTimeout(() => store.set("piet-regie-v2", S), 250);
   paint();
 }
 
@@ -534,7 +560,7 @@ $("stampgrid").addEventListener("click", e => {
 });
 function placeStamp(id, x, y, big){
   const k = K.stamps.find(s => s.id === id); if (!k) return;
-  const st = {id: rid(), label:k.label, sub:k.sub, tone:k.tone, x:+x.toFixed(4), y:+y.toFixed(4), rot: Math.round(-12 + Math.random()*10), big:!!big};
+  const st = {id: rid(), label:k.label, sub:k.sub, tone:k.tone, verdict:k.verdict || null, x:+x.toFixed(4), y:+y.toFixed(4), rot: Math.round(-12 + Math.random()*10), big:!!big};
   S.stamps.push(st); S.hist.push({k:"stamp", id:st.id});
   if (k.verdict) setVerdict(k.verdict, true);
   if (k.tone === "red") link.send("flash", {tone:"red"});
@@ -559,13 +585,13 @@ function newCase(){
   S.case = {no:(S.case.no||0)+1, item:"", price:"", market:"", seller:"", since:"", on:S.case.on, verdict:null};
   S.checks = {}; S.checkOrder = []; S.draw = []; S.stamps = []; S.hist = [];
   commit(); fillInputs();
-  link.send("fx", {kind:"toast", tone:"amber", title:"Neuer Fall #" + String(S.case.no).padStart(2,"0"), text:"Nächste Anzeige unter die Lupe.", sound:"whoosh"});
+  caption();
   log("Fall #" + S.case.no + " angelegt.");
 }
 function paintTally(){
-  $("tallyrow").innerHTML = [["scam","SCAM","t-red"],["sus","VERDACHT","t-amber"],["legit","SAUBER","t-mint"]].map(([k,l,c]) =>
+  $("tallyrow").innerHTML = [["scam","VERDACHT","t-red"],["sus","FRAGLICH","t-amber"],["legit","UNAUFFÄLLIG","t-green"]].map(([k,l,c]) =>
     '<div class="t '+c+'">'+l+' <b>'+(S.tally[k]||0)+'</b><button data-k="'+k+'" data-d="-1" aria-label="'+l+' minus">−</button><button data-k="'+k+'" data-d="1" aria-label="'+l+' plus">+</button></div>').join("") +
-    '<span class="hint">Strichliste fürs ganze Video</span>';
+    '<span class="hint">Bilanz fürs ganze Video</span>';
 }
 $("tallyrow").addEventListener("click", e => { const b = e.target.closest("button[data-k]"); if (!b) return; S.tally[b.dataset.k] = Math.max(0, (S.tally[b.dataset.k]||0) + (+b.dataset.d)); commit(); });
 
@@ -584,7 +610,7 @@ $("checks").addEventListener("click", e => {
   const c = K.checks.find(x => x.id === row.dataset.id), idx = K.checks.indexOf(c) + 1;
   const b = e.target.closest("button[data-s]");
   if (!b){
-    link.send("checkpop", {tone:"steel", eyebrow:"Check "+idx+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q, seconds:9});
+    link.send("checkpop", {tone:"steel", eyebrow:"Prüfpunkt "+String(idx).padStart(2,"0")+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q, seconds:9});
     link.send("sound", {name:"whoosh"}); return;
   }
   const s = +b.dataset.s, cur = S.checks[c.id] || 0, next = cur === s ? 0 : s;
@@ -592,9 +618,9 @@ $("checks").addEventListener("click", e => {
   S.checkOrder = S.checkOrder.filter(x => x !== c.id); if (next) S.checkOrder.push(c.id);
   commit();
   if (next && S.autoPop){
-    link.send("checkpop", {tone: next === 2 ? "red" : "mint", eyebrow:"Check "+idx+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q,
-      badge: next === 2 ? "Warnsignal · " + c.flag : "Passt", seconds:7});
-    link.send("sound", {name: next === 2 ? "buzzer" : "ding"});
+    link.send("checkpop", {tone: next === 2 ? "red" : "mint", eyebrow:"Prüfpunkt "+String(idx).padStart(2,"0")+" / "+K.checks.length+" · "+c.group, title:c.label, text:c.q,
+      badge: next === 2 ? "Indiz · " + c.flag : "Unauffällig", seconds:7});
+    link.send("sound", {name: next === 2 ? "low" : "chime"});
   }
 });
 $("autoPop").onchange = e => { S.autoPop = e.target.checked; commit(); };
@@ -614,31 +640,58 @@ $("cSend").onclick = () => {
   link.send("fx", d); log("Eingeblendet: " + d.title);
 };
 
-/* ---------- Mini-Piet ---------- */
-let pose = "detektiv", custom = null, pietOn = false;
-const customs = (CFG.miniPiets || []);
-function paintPoses(){
-  const builtin = Object.keys(MiniPiet.POSES).map(k => '<button data-p="'+k+'" class="'+(!custom && pose===k?"on":"")+'" title="'+MiniPiet.POSES[k].label+'">'+MiniPiet.svg(k)+'</button>');
-  const own = customs.map((c,i) => '<button data-c="'+i+'" class="'+(custom===i?"on":"")+'" title="'+esc(c.name)+'"><img alt="'+esc(c.name)+'" src="'+esc(c.src)+'"></button>');
-  $("poses").innerHTML = builtin.concat(own).join("");
+/* ---------- Mini-Petes: Regisseur ----------
+   Das Pult entscheidet, wann welcher Mini-Pete welchen Gag macht. So zeigen
+   OBS und die Vorschau dasselbe. Zwischen den Gags schlendern sie herum. */
+const GAGS = MiniPiet.GAGS, rnd = (a,b) => a + Math.random()*(b-a), pick = a => a[Math.floor(Math.random()*a.length)];
+$("crewFig").innerHTML = MiniPiet.svg("neutral");
+$("gags").innerHTML = Object.keys(GAGS).map(k => '<button data-g="'+k+'">'+esc(GAGS[k].label)+'</button>').join("");
+let lastGag = "", nextGagAt = 0, nextStrollAt = Date.now() + 12000;
+function count(){ return S.crew.on ? S.crew.count : 0; }
+function gag(name, line, i){
+  if (!count()) return;
+  if (name === "highfive" && count() < 2) name = "jubel";
+  const d = {i: i != null ? i : Math.floor(Math.random()*count()), name, x: +rnd(.1,.9).toFixed(3)};
+  if (line != null) d.line = line; else { const g = GAGS[name]; d.line = g ? pick(g.lines) : ""; }
+  link.send("gag", d); lastGag = name; log("Mini-Pete: " + (GAGS[name] ? GAGS[name].label : name));
+  nextStrollAt = Date.now() + 9000;
 }
-$("poses").addEventListener("click", e => {
-  const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.c != null){ custom = +b.dataset.c; } else { custom = null; pose = b.dataset.p; }
-  paintPoses(); showPiet();
-});
-function showPiet(text){
-  const d = {pose, text: text != null ? text : $("pText").value, seconds: 7};
-  if (custom != null) d.src = customs[custom].src;
-  link.send("piet", d); pietOn = true;
-}
-$("pShow").onclick = () => showPiet();
-$("pHide").onclick = () => { link.send("hidepiet", {}); pietOn = false; };
+function planNext(){ const g = S.crew.gap || 90; nextGagAt = Date.now() + rnd(g*.6, g*1.4)*1000; }
+planNext();
+setInterval(() => {
+  const now = Date.now(), lbl = $("nextGag");
+  if (!count() || !S.crew.auto || S.layout === "private"){ lbl.textContent = !count() ? "aus" : S.layout === "private" ? "Pause" : "manuell"; return; }
+  const left = Math.max(0, Math.round((nextGagAt - now)/1000));
+  lbl.textContent = "nächster Gag in " + Math.floor(left/60) + ":" + String(left%60).padStart(2,"0");
+  if (now >= nextGagAt){
+    const pool = Object.keys(GAGS).filter(k => k !== lastGag && (k !== "highfive" || count() > 1));
+    gag(pick(pool)); planNext();
+  } else if (now >= nextStrollAt){
+    link.send("stroll", {i: Math.floor(Math.random()*count()), x: +rnd(.05,.95).toFixed(3)});
+    nextStrollAt = now + rnd(11000, 24000);
+  }
+}, 500);
+$("gags").addEventListener("click", e => { const b = e.target.closest("button[data-g]"); if (b){ gag(b.dataset.g); planNext(); } });
+function say(text){ if (!text || !count()) return; link.send("say", {i:0, text}); }
+$("pSay").onclick = () => say($("pText").value.trim());
+$("pText").addEventListener("keydown", e => { if (e.key === "Enter") say($("pText").value.trim()); });
 $("pLines").innerHTML = K.pietLines.map((l,i) => '<button data-l="'+i+'">„'+esc(l.text)+'“</button>').join("");
-$("pLines").addEventListener("click", e => { const b = e.target.closest("button[data-l]"); if (!b) return; const l = K.pietLines[+b.dataset.l]; pose = l.pose; custom = null; $("pText").value = l.text; paintPoses(); showPiet(l.text); });
+$("pLines").addEventListener("click", e => { const b = e.target.closest("button[data-l]"); if (!b) return; const l = K.pietLines[+b.dataset.l]; gag(l.gag, l.text, 0); });
+$("crOn").onchange = e => { S.crew.on = e.target.checked; commit(); };
+$("crAuto").onchange = e => { S.crew.auto = e.target.checked; planNext(); commit(); };
+$("crCount").oninput = e => { S.crew.count = +e.target.value; commit(); };
+$("crGap").oninput = e => { S.crew.gap = +e.target.value; planNext(); commit(); };
+
+/* ---------- Akte-X-Einblendung ---------- */
+function caption(){
+  const now = new Date(), d = now.toLocaleDateString("de-DE"), t = now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
+  const no = "FALL " + String(S.case.no).padStart(2,"0") + (S.case.item ? " · " + S.case.item.toUpperCase() : "");
+  link.send("caption", {lines:[no, "KLEINANZEIGEN, " + d + ", " + t + " UHR"], hold:6});
+}
+$("capBtn").onclick = caption;
 
 /* ---------- Ton ---------- */
-const SND = [["alarm","Alarm"],["bling","Bling"],["ding","Ding"],["stamp","Stempel"],["whoosh","Wusch"],["buzzer","Falsch"],["reveal","Auflösung"],["tick","Tick"]];
+const SND = [["hit","Schlag"],["alarm","Warnung"],["chime","Hinweis"],["whoosh","Wisch"],["low","Tief"],["reveal","Auflösung"],["tick","Uhr"],["type","Taste"]];
 $("sounds").innerHTML = SND.map(([k,l]) => '<button data-snd="'+k+'">'+l+'</button>').join("");
 $("sounds").addEventListener("click", e => { const b = e.target.closest("button[data-snd]"); if (b) link.send("sound", {name:b.dataset.snd}); });
 $("vol").oninput = e => { S.volume = +e.target.value; commit(); };
@@ -647,7 +700,7 @@ $("vol").oninput = e => { S.volume = +e.target.value; commit(); };
 function phaseStep(d){
   const i = Math.max(0, K.phases.findIndex(p => p.id === S.status.phase)), n = Math.min(K.phases.length-1, Math.max(0, i+d));
   S.status.phase = K.phases[n].id; commit();
-  link.send("fx", {kind:"toast", tone:"amber", title:"Phase " + (n+1) + ": " + K.phases[n].label, text:"", sound:"whoosh", seconds:4});
+  link.send("fx", {kind:"toast", tone:"steel", title:String(n+1).padStart(2,"0") + " · " + K.phases[n].label, text:"", sound:"whoosh", seconds:4});
 }
 $("phPrev").onclick = () => phaseStep(-1); $("phNext").onclick = () => phaseStep(1);
 const bind = (id, get, set, ev) => $(id).addEventListener(ev || "input", e => { set(e.target.type === "checkbox" ? e.target.checked : e.target.value); commit(); });
@@ -664,6 +717,10 @@ bind("hOn", 0, v => S.hostTitle = v, "change");
 bind("mTitle", 0, v => S.privacy.title = v);
 bind("mText", 0, v => S.privacy.text = v);
 bind("mOp", 0, v => S.privacy.opacity = +v);
+bind("aFog", 0, v => S.atmo.fog = +v);
+bind("aGrain", 0, v => S.atmo.grain = v, "change");
+bind("aVig", 0, v => S.atmo.vignette = v, "change");
+bind("aRain", 0, v => S.atmo.rain = v, "change");
 
 $("oSave").onclick = () => {
   const o = {host:$("oHost").value.trim() || "127.0.0.1", port:+$("oPort").value || 4455, password:$("oPw").value};
@@ -685,6 +742,8 @@ function fillInputs(){
   $("hName").value = S.host.name; $("hRole").value = S.host.role; $("hKick").value = S.hostKicker; $("camTag").value = S.camTag; $("hOn").checked = S.hostTitle !== false;
   $("mTitle").value = S.privacy.title; $("mText").value = S.privacy.text; $("mOp").value = S.privacy.opacity;
   $("vol").value = S.volume;
+  $("aFog").value = S.atmo.fog; $("aGrain").checked = S.atmo.grain; $("aVig").checked = S.atmo.vignette; $("aRain").checked = S.atmo.rain;
+  $("crOn").checked = S.crew.on; $("crAuto").checked = S.crew.auto; $("crCount").value = S.crew.count; $("crGap").value = S.crew.gap;
   $("oHost").value = obsCfg.host; $("oPort").value = obsCfg.port; $("oPw").value = obsCfg.password || "";
 }
 function paint(){
@@ -695,7 +754,7 @@ function paint(){
   $("caseNoLbl").textContent = "Fall #" + String(S.case.no).padStart(2,"0");
   const r = risk();
   $("riskPct").textContent = r.pct + "%"; $("riskMark").style.left = r.pct + "%"; $("riskLbl").textContent = r.label;
-  $("riskLbl").style.color = "var(--" + ({red:"alarm",amber:"tape",mint:"clean",steel:"mu"}[r.tone]) + ")";
+  $("riskLbl").style.color = "var(--" + ({red:"alarm",amber:"tape",green:"clean",mint:"clean",steel:"mu"}[r.tone]) + ")";
   document.querySelectorAll(".verdicts button").forEach(b => b.classList.toggle("on", b.dataset.v === S.case.verdict));
   paintTally();
   let n = 0;
@@ -709,6 +768,8 @@ function paint(){
   $("phName").textContent = (i+1) + " · " + K.phases[i].label; $("phHint").textContent = K.phases[i].hint;
   $("volLbl").textContent = Math.round(S.volume*100) + " %";
   $("mOpLbl").textContent = Math.round(S.privacy.opacity*100) + " %";
+  $("aFogLbl").textContent = Math.round(S.atmo.fog*100) + " %";
+  $("crCountLbl").textContent = S.crew.count; $("crGapLbl").textContent = "≈ " + S.crew.gap + " s";
 }
 
 /* ---------- Tastatur ---------- */
@@ -723,13 +784,14 @@ document.addEventListener("keydown", e => {
   else if (k === "escape") link.send("clearfx", {});
   else if (k === "backspace"){ e.preventDefault(); undo(); }
   else if (k === "delete") clearDraw();
-  else if (k === "p"){ if (pietOn){ link.send("hidepiet", {}); pietOn = false; } else showPiet(); }
+  else if (k === "p"){ const l = pick(K.pietLines); gag(l.gag, l.text, 0); }
+  else if (k === "i") caption();
   else if (T[k]){ tool = k === "m" ? "pen" : T[k]; paintTools(); }
   else return;
   e.preventDefault();
 });
 
-buildChecks(); paintIns(); paintPoses(); paintTools(); fillInputs(); paint();
+buildChecks(); paintIns(); paintTools(); fillInputs(); paint();
 link.send("state", out());
 })();
 </script>

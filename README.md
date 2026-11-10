@@ -45,7 +45,8 @@ hinzufügen.
 Im Ordner [`obs-scam-detective/`](obs-scam-detective/ANLEITUNG.md) liegt ein
 Regie-Overlay für YouTube-Videos: OBS-Browserquelle plus Regiepult für den
 zweiten Monitor. Damit lassen sich Kleinanzeigen live und ohne Schnitt
-prüfen. Einrichtung und Drehbuch stehen in der ANLEITUNG.md.
+prüfen: Ermittler-Look mit Nebel, Mini-Petes und Live-Regie. Einrichtung
+und Drehbuch stehen in der ANLEITUNG.md.
 
 ## Datenschutz
 

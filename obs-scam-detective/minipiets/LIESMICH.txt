@@ -1,7 +1,8 @@
-Hier kommen deine eigenen Mini-Piet-Bilder rein (PNG, GIF oder WebP mit durchsichtigem Hintergrund).
-Am besten hochkant, ungefähr 500 x 600 Pixel.
+Hier kommt dein Logo für den Hoodie der Mini-Petes rein
+(PNG oder SVG mit durchsichtigem Hintergrund, am besten quadratisch).
 
-Danach in config.js eintragen, zum Beispiel:
-  miniPiets: [
-    { name: "Schock", src: "minipiets/schock.png" },
-  ],
+Danach in config.js eintragen:
+  miniPiet: {
+    logo: "minipiets/logo.png",
+    ...
+  },
